@@ -157,10 +157,10 @@ void runAsHost() {
 //Lets the host accpet or reject an established connection with a client
 bool acceptClientConnection() {
 	cout << "Would you like to accept the connection, Y/N?\n";
-  string user_input = "";
+  string user_input;
 
 	while(1) {
-		cin >> user_input;
+		getline(cin, user_input);
 		if (user_input.compare("Y") == 0 || user_input.compare("y") == 0) {
 			return true;
 		} else if (user_input.compare("N") == 0 || user_input.compare("n") == 0) {
@@ -201,6 +201,9 @@ void clientGameLoop(int client_socket) {
 		//send
 		string user_input;
 		cout << "Send message to host\n";
+		//cin.ignore(256, '\n');
+		// cin.clear();
+		// cin.sync();
 		getline(cin, user_input);
 		user_input = user_input + "\n";
 		cout << "user input = " << user_input.c_str();
@@ -218,7 +221,7 @@ void clientGameLoop(int client_socket) {
 			break;
 		}
 		else {
-			cout << "Host>" << received_msg;
+			cout << "Host> " << received_msg;
 		}
 	}
 	cout << "Ending program";
@@ -243,12 +246,16 @@ void hostGameLoop(int client_socket) {
 			break;
 		}
 		else {
-			cout << "Client>" << received_msg;
+			cout << "Client> " << received_msg;
 		}
 
 		//send
+
 		string user_input;
-		cout << "Send message to host\n";
+		cout << "Send message to client\n";
+		//cin.ignore(256, '\n');
+		// cin.clear();
+		// cin.sync();
 		getline(cin, user_input);
 		user_input = user_input + "\n";
 		cout << "user input = " << user_input.c_str();
