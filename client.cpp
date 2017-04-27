@@ -16,6 +16,8 @@ using namespace std;
 void printClientIP(struct sockaddr_in their_addr);
 void runAsClient();
 void runAsHost();
+bool acceptClientConnection();
+
 static void die(const char* message);
 static unsigned long resolveName(const char* name);
 
@@ -25,7 +27,7 @@ int main(int argc, char ** argv) {
 
 	if (argc == 2) {
 		if (strcmp(argv[1], "Client")) {
-			cout << "The argument included is invalid, \nif you wish to run as a client please inlude \"Client\" as an argument and retry\n";
+			cout << "The argument included was invalid. \nIf you wish to run as a client please inlude \"Client\" as an argument and retry\n";
 			exit(1);
 		} else {
 			cout << "You are a client\n";
@@ -111,13 +113,44 @@ void runAsHost() {
 		close(host_socket);
 		exit(1);
 	}
-	printClientIP(client_addr);
 
-	close(host_socket);
-	close(client_socket);
-	cout << "Socket closed\n";
+	if (acceptClientConnection()) {
+		close(host_socket);
+		close(client_socket);
+		cout << "Connection was accepted, continuing\n";
+		cout << "Socket closed\n";
+	} else {
+		close(host_socket);
+		close(client_socket);
+		cout << "Connection was rejected, ending\n";
+		cout << "End program\n";
+	}
+
+	// bool isRunning = true;
+	// while (isRunning) {
+	//
+	// }
 }
 
+//Lets the host accpet or reject an established connection with a client
+bool acceptClientConnection() {
+	cout << "Would you like to accept the connection, Y/N?\n";
+  string user_input = "";
+
+	while(1) {
+		cin >> user_input;
+		if (user_input.compare("Y") == 0) {
+			return true;
+		} else if (user_input.compare("N") == 0) {
+			return false;
+		}
+		else {
+			cout << "Invalid input, please enter Y for yes or N for no";
+		}
+	}
+}
+
+//Handles creating host name for a client to connect to a server
 static unsigned long resolveName(const char * name) {
 	struct hostent *host;
 	if ((host = gethostbyname(name)) == NULL)
@@ -125,11 +158,13 @@ static unsigned long resolveName(const char * name) {
 	return *((unsigned long*) host->h_addr_list[0]);
 }
 
+//If an error while trying to connect a client, this kills operations
 static void die(const char* message) {
 	perror(message);
 	exit(1);
 }
 
+//Print the IP address of the connected client
 void printClientIP(struct sockaddr_in their_addr) {
 	char s[INET6_ADDRSTRLEN];
 	inet_ntop(their_addr.sin_family, &their_addr.sin_addr, s, sizeof(s));
