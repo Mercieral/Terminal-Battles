@@ -1,0 +1,7 @@
+# menuTest
+
+gcc menuTest.c -lncurses.c -lmenu -o menuTest
+
+# menuTestUsageEx
+
+gcc menuTestUsageEx.c -lncurses -lmenu -o menuTestUsageEx
