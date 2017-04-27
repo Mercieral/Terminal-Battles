@@ -109,6 +109,11 @@ void runAsHost() {
 	}
 	cout << "Created the host socket\n";
 
+	int on = 1;
+	if (setsockopt(host_socket, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0) {
+		cout << "Something went wrong when settting socket options... " << strerror(errno) << "\n";
+	}
+
 	//Passive Open
 	if (bind(host_socket, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
 		cout << "Error trying to bind and connect socket. Error = " << strerror(errno) << "\n";
@@ -197,7 +202,7 @@ void clientGameLoop(int client_socket) {
 		string user_input;
 		cout << "Send message to host\n";
 		getline(cin, user_input);
-		//user_input = user_input + "\n";
+		user_input = user_input + "\n";
 		cout << "user input = " << user_input.c_str();
 		send(client_socket, user_input.c_str(), user_input.length() + 1, 0);
 
@@ -245,7 +250,7 @@ void hostGameLoop(int client_socket) {
 		string user_input;
 		cout << "Send message to host\n";
 		getline(cin, user_input);
-		//user_input = user_input + "\n";
+		user_input = user_input + "\n";
 		cout << "user input = " << user_input.c_str();
 		send(client_socket, user_input.c_str(), user_input.length() + 1, 0);
 	}
