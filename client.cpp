@@ -16,6 +16,8 @@ using namespace std;
 void printClientIP(struct sockaddr_in their_addr);
 void runAsClient(char* serverName);
 void runAsHost();
+void clientGameLoop(int client_socket);
+void hostGameLoop(int client_socket);
 bool acceptClientConnection();
 
 static void die(const char* message);
@@ -26,13 +28,8 @@ int main(int argc, char ** argv) {
 	bool isClient = false;
 
 	if (argc == 2) {
-		// if (strcmp(argv[1], "Client")) {
-		// 	cout << "The argument included was invalid. \nIf you wish to run as a client please inlude \"Client\" as an argument and retry\n";
-		// 	exit(1);
-		// } else {
-			cout << "You are a client connecting to " << argv[1] << "\n";
-			isClient = true;
-		// }
+		cout << "You are a client connecting to " << argv[1] << "\n";
+		isClient = true;
 	} else {
 		cout << "You are a host\n";
 	}
@@ -70,6 +67,24 @@ void runAsClient(char* serverName) {
 		close(client_socket);
 		exit(1);
 	} //socket failed to connect
+
+	cout << "Please wait for a response from the host\n";
+	char * received_msg = (char *) malloc(1024);
+	int len = recv(client_socket, received_msg, 1024, 0);
+	if (len < 0) {
+		cout << "Error receiving msg. Error = " << strerror(errno) << "\n";
+		close(client_socket);
+		exit(1);
+	} else if (len == 0) {
+		cout << "Connection terminated, exiting\n";
+		close(client_socket);
+		exit(1);
+	}
+	else {
+		cout << received_msg;
+		free(received_msg);
+		clientGameLoop(client_socket);
+	}
 }
 
 void runAsHost() {
@@ -106,23 +121,27 @@ void runAsHost() {
 	int client_socket;
 	struct sockaddr_in client_addr;
 	socklen_t addr_size = sizeof(client_addr);
-	if ((client_socket = accept(host_socket, (struct sockaddr *) &client_addr, &addr_size)) < 0) {
-		cout << "Error trying to accept client connection. Error = " << strerror(errno) << "\n";
-		close(host_socket);
-		exit(1);
+
+	bool isRunning = true;
+
+	while (isRunning) {
+		if ((client_socket = accept(host_socket, (struct sockaddr *) &client_addr, &addr_size)) < 0) {
+			cout << "Error trying to accept client connection. Error = " << strerror(errno) << "\n";
+			close(host_socket);
+			exit(1);
+		}
+
+		if (acceptClientConnection()) {
+			cout << "Connection was accepted, continuing\n";
+			const char * msg = "Connection accepted by host\n";
+			send(client_socket, msg, strlen(msg), 0);
+			hostGameLoop(client_socket);
+		} else {
+			close(client_socket);
+			cout << "Connection was rejected, closing client socket\n";
+		}
 	}
 
-	if (acceptClientConnection()) {
-		close(host_socket);
-		close(client_socket);
-		cout << "Connection was accepted, continuing\n";
-		cout << "Socket closed\n";
-	} else {
-		close(host_socket);
-		close(client_socket);
-		cout << "Connection was rejected, ending\n";
-		cout << "End program\n";
-	}
 
 	// bool isRunning = true;
 	// while (isRunning) {
@@ -167,4 +186,70 @@ void printClientIP(struct sockaddr_in their_addr) {
 	char s[INET6_ADDRSTRLEN];
 	inet_ntop(their_addr.sin_family, &their_addr.sin_addr, s, sizeof(s));
 	cout << "Connection established with " << s << "\n";
+}
+
+void clientGameLoop(int client_socket) {
+	char * received_msg = (char *) malloc(1024);
+	bool gameIsRunning = true;
+
+	while (gameIsRunning) {
+		//send
+		string user_input;
+		cout << "Send message to host\n";
+		getline(cin, user_input);
+		//user_input = user_input + "\n";
+		cout << "user input = " << user_input.c_str();
+		send(client_socket, user_input.c_str(), user_input.length() + 1, 0);
+
+		//receive
+		int len = recv(client_socket, received_msg, 1024, 0);
+		if (len < 0) {
+			cout << "Error receiving msg. Error = " << strerror(errno) << "\n";
+			gameIsRunning = false;
+			break;
+		} else if (len == 0) {
+			cout << "Connection terminated, exiting\n";
+			gameIsRunning = false;
+			break;
+		}
+		else {
+			cout << "Host>" << received_msg;
+		}
+	}
+	cout << "Ending program";
+	close(client_socket);
+	free(received_msg);
+}
+
+void hostGameLoop(int client_socket) {
+	char * received_msg = (char *) malloc(1024);
+	bool gameIsRunning = true;
+
+	while (gameIsRunning) {
+		//receive
+		int len = recv(client_socket, received_msg, 1024, 0);
+		if (len < 0) {
+			cout << "Error receiving msg. Error = " << strerror(errno) << "\n";
+			gameIsRunning = false;
+			break;
+		} else if (len == 0) {
+			cout << "Connection terminated, exiting\n";
+			gameIsRunning = false;
+			break;
+		}
+		else {
+			cout << "Client>" << received_msg;
+		}
+
+		//send
+		string user_input;
+		cout << "Send message to host\n";
+		getline(cin, user_input);
+		//user_input = user_input + "\n";
+		cout << "user input = " << user_input.c_str();
+		send(client_socket, user_input.c_str(), user_input.length() + 1, 0);
+	}
+	cout << "Ending program";
+	close(client_socket);
+	free(received_msg);
 }
