@@ -14,7 +14,7 @@ using namespace std;
 #define PORT 8888
 
 void printClientIP(struct sockaddr_in their_addr);
-void runAsClient();
+void runAsClient(char* serverName);
 void runAsHost();
 bool acceptClientConnection();
 
@@ -26,19 +26,19 @@ int main(int argc, char ** argv) {
 	bool isClient = false;
 
 	if (argc == 2) {
-		if (strcmp(argv[1], "Client")) {
-			cout << "The argument included was invalid. \nIf you wish to run as a client please inlude \"Client\" as an argument and retry\n";
-			exit(1);
-		} else {
-			cout << "You are a client\n";
+		// if (strcmp(argv[1], "Client")) {
+		// 	cout << "The argument included was invalid. \nIf you wish to run as a client please inlude \"Client\" as an argument and retry\n";
+		// 	exit(1);
+		// } else {
+			cout << "You are a client connecting to " << argv[1] << "\n";
 			isClient = true;
-		}
+		// }
 	} else {
 		cout << "You are a host\n";
 	}
 
 	if (isClient) {
-		runAsClient();
+		runAsClient(argv[1]);
 	} else {
 		runAsHost();
 	}
@@ -46,18 +46,16 @@ int main(int argc, char ** argv) {
 	return 0;
 }
 
-void runAsClient() {
+void runAsClient(char* serverName) {
 	int client_socket;
 	struct sockaddr_in serverAddr;
 	unsigned short serverPort;
-	const char * serverName;
 
-	serverName = "localhost";
 	serverPort = PORT;
 
 	//Create the socket
 	client_socket = socket(PF_INET, SOCK_STREAM, 0);
-	cout << "Created the client socket";
+	cout << "Created the client socket\n";
 
 	//Initialize the endpoint structure
 	memset(&serverAddr, 0, sizeof(serverAddr));
@@ -139,13 +137,13 @@ bool acceptClientConnection() {
 
 	while(1) {
 		cin >> user_input;
-		if (user_input.compare("Y") == 0) {
+		if (user_input.compare("Y") == 0 || user_input.compare("y") == 0) {
 			return true;
-		} else if (user_input.compare("N") == 0) {
+		} else if (user_input.compare("N") == 0 || user_input.compare("n") == 0) {
 			return false;
 		}
 		else {
-			cout << "Invalid input, please enter Y for yes or N for no";
+			cout << "Invalid input, please enter Y for yes or N for no\n";
 		}
 	}
 }
