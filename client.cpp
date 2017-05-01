@@ -89,9 +89,7 @@ void runAsClient(char* serverName) {
 
 void runAsHost() {
 	int host_socket;
-	socklen_t addrlen;
 	struct sockaddr_in serverAddr;
-	struct sockaddr_storage remoteaddr;
 
 	//Initialize the endpoint structure
 	memset(&serverAddr, 0, sizeof(serverAddr));
