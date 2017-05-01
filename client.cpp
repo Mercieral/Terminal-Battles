@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <netdb.h>
+#include "gameboard.hpp"
 
 using namespace std;
 
@@ -194,6 +195,7 @@ void printClientIP(struct sockaddr_in their_addr) {
 void clientGameLoop(int client_socket) {
 	char * received_msg = (char *) malloc(1024);
 	bool gameIsRunning = true;
+	Gameboard myBoard;
 
 	while (gameIsRunning) {
 		//send
@@ -230,6 +232,7 @@ void clientGameLoop(int client_socket) {
 void hostGameLoop(int client_socket) {
 	char * received_msg = (char *) malloc(1024);
 	bool gameIsRunning = true;
+	Gameboard myBoard;
 
 	while (gameIsRunning) {
 		//receive
