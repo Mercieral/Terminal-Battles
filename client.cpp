@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <ncurses.h>
 #include <arpa/inet.h>
 #include <string.h>
 #include <unistd.h>
@@ -234,7 +235,13 @@ void hostGameLoop(int client_socket) {
 	bool gameIsRunning = true;
 	Gameboard myBoard;
 
+	// ***************************************
+	// Handles board
+
+	initscr();
+
 	while (gameIsRunning) {
+		refresh();
 		//receive
 		int len = recv(client_socket, received_msg, 1024, 0);
 		if (len < 0) {
@@ -247,21 +254,28 @@ void hostGameLoop(int client_socket) {
 			break;
 		}
 		else {
-			cout << "Client> " << received_msg;
+			printw(received_msg);
+			// cout << "Client> " << received_msg;
 		}
+		// getch();
+		char * str  = (char * ) malloc(1024);
+		getstr(str);
 
 		//send
 
-		string user_input;
-		cout << "Send message to client\n";
-		//cin.ignore(256, '\n');
-		// cin.clear();
-		// cin.sync();
-		getline(cin, user_input);
+		// string user_input;
+		// cout << "Send message to client\n";
+
+		// getline(cin, user_input);
+		string user_input =  str;
 		user_input = user_input + "\n";
-		cout << "user input = " << user_input.c_str();
+		cout << "user input = " << user_input.c_str() << endl;
+		// printw("user input ", user_input)
 		send(client_socket, user_input.c_str(), user_input.length() + 1, 0);
 	}
+
+	endwin(); // Finishes graphics
+	// ***************************************
 	cout << "Ending program";
 	close(client_socket);
 	free(received_msg);
