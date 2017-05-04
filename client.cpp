@@ -15,31 +15,46 @@ using namespace std;
 
 #define PORT 8888
 
+struct plancoords
+{
+	int y, x;
+};
+
 void printClientIP(struct sockaddr_in their_addr);
-void runAsClient(char* serverName);
+void runAsClient(char *serverName);
 void runAsHost();
 void clientGameLoop(int client_socket);
 void hostGameLoop(int client_socket);
 bool acceptClientConnection();
+void displayBoard();
 
-static void die(const char* message);
-static unsigned long resolveName(const char* name);
+struct plancoords cursor;
 
-int main(int argc, char ** argv) {
+static void die(const char *message);
+static unsigned long resolveName(const char *name);
+
+int main(int argc, char **argv)
+{
 
 	bool isClient = false;
 
-	if (argc == 2) {
+	if (argc == 2)
+	{
 		cout << "You are a client connecting to " << argv[1] << "\n";
 		isClient = true;
-	} else {
+	}
+	else
+	{
 		cout << "You are a host\n";
 	}
 
-	if (isClient) {
+	if (isClient)
+	{
 		cout << "\e[8;25;150t";
 		runAsClient(argv[1]);
-	} else {
+	}
+	else
+	{
 		cout << "\e[8;25;150t";
 		runAsHost();
 	}
@@ -47,7 +62,8 @@ int main(int argc, char ** argv) {
 	return 0;
 }
 
-void runAsClient(char* serverName) {
+void runAsClient(char *serverName)
+{
 	int client_socket;
 	struct sockaddr_in serverAddr;
 	unsigned short serverPort;
@@ -66,32 +82,38 @@ void runAsClient(char* serverName) {
 	cout << "Created the endpoint structure\n";
 
 	// Active open
-	if (connect(client_socket, (const struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
+	if (connect(client_socket, (const struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0)
+	{
 		cout << "Error trying to accept client connection. Error = " << strerror(errno) << "\n";
 		close(client_socket);
 		exit(1);
 	} //socket failed to connect
 
 	cout << "Please wait for a response from the host\n";
-	char * received_msg = (char *) malloc(1024);
+	char *received_msg = (char *)malloc(1024);
 	int len = recv(client_socket, received_msg, 1024, 0);
-	if (len < 0) {
+	if (len < 0)
+	{
 		cout << "Error receiving msg. Error = " << strerror(errno) << "\n";
 		close(client_socket);
 		exit(1);
-	} else if (len == 0) {
+	}
+	else if (len == 0)
+	{
 		cout << "Connection terminated, exiting\n";
 		close(client_socket);
 		exit(1);
 	}
-	else {
+	else
+	{
 		cout << received_msg;
 		free(received_msg);
 		clientGameLoop(client_socket);
 	}
 }
 
-void runAsHost() {
+void runAsHost()
+{
 	int host_socket;
 	struct sockaddr_in serverAddr;
 
@@ -104,7 +126,8 @@ void runAsHost() {
 
 	//Create socket
 	host_socket = socket(PF_INET, SOCK_STREAM, 0);
-	if (host_socket < 0) {
+	if (host_socket < 0)
+	{
 		cout << "Error creating host socket. Error = " << strerror(errno) << "\n";
 		close(host_socket);
 		exit(1);
@@ -112,12 +135,14 @@ void runAsHost() {
 	cout << "Created the host socket\n";
 
 	int on = 1;
-	if (setsockopt(host_socket, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0) {
+	if (setsockopt(host_socket, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)
+	{
 		cout << "Something went wrong when settting socket options... " << strerror(errno) << "\n";
 	}
 
 	//Passive Open
-	if (bind(host_socket, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
+	if (bind(host_socket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0)
+	{
 		cout << "Error trying to bind and connect socket. Error = " << strerror(errno) << "\n";
 		close(host_socket);
 		exit(1);
@@ -131,24 +156,28 @@ void runAsHost() {
 
 	bool isRunning = true;
 
-	while (isRunning) {
-		if ((client_socket = accept(host_socket, (struct sockaddr *) &client_addr, &addr_size)) < 0) {
+	while (isRunning)
+	{
+		if ((client_socket = accept(host_socket, (struct sockaddr *)&client_addr, &addr_size)) < 0)
+		{
 			cout << "Error trying to accept client connection. Error = " << strerror(errno) << "\n";
 			close(host_socket);
 			exit(1);
 		}
 
-		if (acceptClientConnection()) {
+		if (acceptClientConnection())
+		{
 			cout << "Connection was accepted, continuing\n";
-			const char * msg = "Connection accepted by host\n";
+			const char *msg = "Connection accepted by host\n";
 			send(client_socket, msg, strlen(msg), 0);
 			hostGameLoop(client_socket);
-		} else {
+		}
+		else
+		{
 			close(client_socket);
 			cout << "Connection was rejected, closing client socket\n";
 		}
 	}
-
 
 	// bool isRunning = true;
 	// while (isRunning) {
@@ -157,139 +186,197 @@ void runAsHost() {
 }
 
 //Lets the host accpet or reject an established connection with a client
-bool acceptClientConnection() {
+bool acceptClientConnection()
+{
 	cout << "Would you like to accept the connection, Y/N?\n";
-  string user_input;
+	string user_input;
 
-	while(1) {
+	while (1)
+	{
 		getline(cin, user_input);
-		if (user_input.compare("Y") == 0 || user_input.compare("y") == 0) {
+		if (user_input.compare("Y") == 0 || user_input.compare("y") == 0)
+		{
 			return true;
-		} else if (user_input.compare("N") == 0 || user_input.compare("n") == 0) {
+		}
+		else if (user_input.compare("N") == 0 || user_input.compare("n") == 0)
+		{
 			return false;
 		}
-		else {
+		else
+		{
 			cout << "Invalid input, please enter Y for yes or N for no\n";
 		}
 	}
 }
 
 //Handles creating host name for a client to connect to a server
-static unsigned long resolveName(const char * name) {
+static unsigned long resolveName(const char *name)
+{
 	struct hostent *host;
 	if ((host = gethostbyname(name)) == NULL)
 		die("gethostbyname() failed");
-	return *((unsigned long*) host->h_addr_list[0]);
+	return *((unsigned long *)host->h_addr_list[0]);
 }
 
 //If an error while trying to connect a client, this kills operations
-static void die(const char* message) {
+static void die(const char *message)
+{
 	perror(message);
 	exit(1);
 }
 
 //Print the IP address of the connected client
-void printClientIP(struct sockaddr_in their_addr) {
+void printClientIP(struct sockaddr_in their_addr)
+{
 	char s[INET6_ADDRSTRLEN];
 	inet_ntop(their_addr.sin_family, &their_addr.sin_addr, s, sizeof(s));
 	cout << "Connection established with " << s << "\n";
 }
 
-void clientGameLoop(int client_socket) {
-	char * received_msg = (char *) malloc(1024);
+void displayBoard()
+{
+	initscr();
+	printw(
+		"--------------------Your Board--------------~~~~~--------------------Opp. Board--------------\n"
+		"____________________________________________~~~~~____________________________________________\n"
+		"|  | A | B | C | D | E | F | G | H | I | J |~~~~~|  | A | B | C | D | E | F | G | H | I | J |\n"
+		"| 1|   |   |   |   |   |   |   |   |   |   |~~~~~| 1|   |   |   |   |   |   |   |   |   |   |\n"
+		"| 2|   |   |   |   |   |   |   |   |   |   |~~~~~| 2|   |   |   |   |   |   |   |   |   |   |\n"
+		"| 3|   |   |   |   |   |   |   |   |   |   |~~~~~| 3|   |   |   |   |   |   |   |   |   |   |\n"
+		"| 4|   |   |   |   |   |   |   |   |   |   |~~~~~| 4|   |   |   |   |   |   |   |   |   |   |\n"
+		"| 5|   |   |   |   |   |   |   |   |   |   |~~~~~| 5|   |   |   |   |   |   |   |   |   |   |\n"
+		"| 6|   |   |   |   |   |   |   |   |   |   |~~~~~| 6|   |   |   |   |   |   |   |   |   |   |\n"
+		"| 7|   |   |   |   |   |   |   |   |   |   |~~~~~| 7|   |   |   |   |   |   |   |   |   |   |\n"
+		"| 8|   |   |   |   |   |   |   |   |   |   |~~~~~| 8|   |   |   |   |   |   |   |   |   |   |\n"
+		"| 9|   |   |   |   |   |   |   |   |   |   |~~~~~| 9|   |   |   |   |   |   |   |   |   |   |\n"
+		"|10|   |   |   |   |   |   |   |   |   |   |~~~~~|10|   |   |   |   |   |   |   |   |   |   |\n"
+		"--------------------------------------------~~~~~--------------------------------------------\n",
+		"Hi");
+	cursor.y = 3;
+	cursor.x = 5;
+	move(cursor.y, cursor.x);
+}
+
+void clientGameLoop(int client_socket)
+{
+	char *received_msg = (char *)malloc(1024);
 	bool gameIsRunning = true;
 	Gameboard myBoard;
 
-	while (gameIsRunning) {
+	displayBoard();
+
+	while (gameIsRunning)
+	{
+		refresh();
 		//send
-		string user_input;
-		cout << "Send message to host\n";
+
+		cursor.y = 15;
+		cursor.x = 0;
+		move(cursor.y, cursor.x);
+		printw("\n");
+		move(cursor.y, cursor.x);
+		printw("Send message to host: ");
+
+		char *str = (char *)malloc(1024);
+		getstr(str);
+		cursor.y = 15;
+		cursor.x = 0;
+		move(cursor.y, cursor.x);
+		printw("Waiting for message from host...\n");
+		refresh();
 		//cin.ignore(256, '\n');
 		// cin.clear();
 		// cin.sync();
-		getline(cin, user_input);
+		// getline(cin, user_input);
+		string user_input = str;
 		user_input = user_input + "\n";
-		cout << "user input = " << user_input.c_str();
 		send(client_socket, user_input.c_str(), user_input.length() + 1, 0);
+		free(str);
 
 		//receive
 		int len = recv(client_socket, received_msg, 1024, 0);
-		if (len < 0) {
+		printw("\n");
+		if (len < 0)
+		{
 			cout << "Error receiving msg. Error = " << strerror(errno) << "\n";
 			gameIsRunning = false;
 			break;
-		} else if (len == 0) {
+		}
+		else if (len == 0)
+		{
 			cout << "Connection terminated, exiting\n";
 			gameIsRunning = false;
 			break;
 		}
-		else {
-			cout << "Host> " << received_msg;
+		else
+		{
+			cursor.y = 16;
+			cursor.x = 0;
+			move(cursor.y, cursor.x);
+			printw(received_msg);
 		}
 	}
+	endwin(); // Finishes graphics
 	cout << "Ending program";
 	close(client_socket);
 	free(received_msg);
 }
 
-void hostGameLoop(int client_socket) {
-	char * received_msg = (char *) malloc(1024);
+void hostGameLoop(int client_socket)
+{
+	char *received_msg = (char *)malloc(1024);
 	bool gameIsRunning = true;
 	Gameboard myBoard;
 
-	// ***************************************
-	// Handles board
+	displayBoard();
 
-	initscr();
-	printw(
-	    "--------------------Your Board--------------~~~~~--------------------Opp. Board--------------\n"
-	    "____________________________________________~~~~~____________________________________________\n"
-	    "|  | A | B | C | D | E | F | G | H | I | J |~~~~~|  | A | B | C | D | E | F | G | H | I | J |\n"
-	    "| 1|   |   |   |   |   |   |   |   |   |   |~~~~~| 1|   |   |   |   |   |   |   |   |   |   |\n"
-	    "| 2|   |   |   |   |   |   |   |   |   |   |~~~~~| 2|   |   |   |   |   |   |   |   |   |   |\n"
-	    "| 3|   |   |   |   |   |   |   |   |   |   |~~~~~| 3|   |   |   |   |   |   |   |   |   |   |\n"
-	    "| 4|   |   |   |   |   |   |   |   |   |   |~~~~~| 4|   |   |   |   |   |   |   |   |   |   |\n"
-	    "| 5|   |   |   |   |   |   |   |   |   |   |~~~~~| 5|   |   |   |   |   |   |   |   |   |   |\n"
-	    "| 6|   |   |   |   |   |   |   |   |   |   |~~~~~| 6|   |   |   |   |   |   |   |   |   |   |\n"
-	    "| 7|   |   |   |   |   |   |   |   |   |   |~~~~~| 7|   |   |   |   |   |   |   |   |   |   |\n"
-	    "| 8|   |   |   |   |   |   |   |   |   |   |~~~~~| 8|   |   |   |   |   |   |   |   |   |   |\n"
-	    "| 9|   |   |   |   |   |   |   |   |   |   |~~~~~| 9|   |   |   |   |   |   |   |   |   |   |\n"
-	    "|10|   |   |   |   |   |   |   |   |   |   |~~~~~|10|   |   |   |   |   |   |   |   |   |   |\n"
-	    "--------------------------------------------~~~~~--------------------------------------------\n",
-	    "Hi");
-
-	while (gameIsRunning) {
+	while (gameIsRunning)
+	{
 		refresh();
 		//receive
 		int len = recv(client_socket, received_msg, 1024, 0);
-		if (len < 0) {
+		if (len < 0)
+		{
 			cout << "Error receiving msg. Error = " << strerror(errno) << "\n";
 			gameIsRunning = false;
 			break;
-		} else if (len == 0) {
+		}
+		else if (len == 0)
+		{
 			cout << "Connection terminated, exiting\n";
 			gameIsRunning = false;
 			break;
 		}
-		else {
+		else
+		{
+			cursor.y = 16;
+			cursor.x = 0;
+			move(cursor.y, cursor.x);
 			printw(received_msg);
-			// cout << "Client> " << received_msg;
 		}
-		// getch();
-		char * str  = (char * ) malloc(1024);
+
+		cursor.y = 15;
+		cursor.x = 0;
+		move(cursor.y, cursor.x);
+		printw("\n");
+		move(cursor.y, cursor.x);
+		printw("Send message to client: ");
+
+		char *str = (char *)malloc(1024);
 		getstr(str);
-
-		//send
-
-		// string user_input;
-		// cout << "Send message to client\n";
-
+		cursor.y = 15;
+		cursor.x = 0;
+		move(cursor.y, cursor.x);
+		printw("Waiting for message from client...\n");
+		refresh();
+		//cin.ignore(256, '\n');
+		// cin.clear();
+		// cin.sync();
 		// getline(cin, user_input);
-		string user_input =  str;
+		string user_input = str;
 		user_input = user_input + "\n";
-		cout << "user input = " << user_input.c_str() << endl;
-		// printw("user input ", user_input)
 		send(client_socket, user_input.c_str(), user_input.length() + 1, 0);
+		free(str);
 	}
 
 	endwin(); // Finishes graphics
