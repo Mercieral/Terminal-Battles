@@ -9,7 +9,8 @@ using namespace std;
 Game_Piece piece_array [5];
 
 // empty constructor
-Gameboard::Gameboard () {
+Gameboard::Gameboard (bool host) {
+    setIsHost(host);
     initializeBoard();
     initializeGamePieces();
     generateBoardPlacement();
@@ -49,8 +50,14 @@ void Gameboard::printBoard() {
 }
 
 void Gameboard::generateBoardPlacement() {
+  cout << "Am i host: " << to_string(isHost) << '\n';
   for (int i = 0; i < 5; i++) {
-    srand(time(0) + i);
+    if (isHost) {
+      srand(time(0) + i + 1);
+    }
+    else {
+      srand(time(0) + i);
+    }
     int n = 0;
     int starting_peg = (rand() % 100);
     int orientation = (rand() % 2) + 1;
@@ -145,4 +152,12 @@ void Gameboard::addPieceToBoardArray(int orientation, int starting_peg, int piec
       }
     }
   } //Horizontal Orientation
+}
+
+void Gameboard::setIsHost(bool host) {
+  isHost = host;
+}
+
+void Gameboard::dummyFunction() {
+  //Do nothing make issue
 }

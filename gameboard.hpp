@@ -19,8 +19,10 @@
 
 class Gameboard {
   char boardArray [BOARDSIZE][BOARDSIZE];
+  bool isHost;
   public:
-    Gameboard ();
+    Gameboard (bool host);
+    void dummyFunction();
     void printBoard ();
   private:
     void initializeBoard();
@@ -28,4 +30,5 @@ class Gameboard {
     void generateBoardPlacement();
     bool checkStartingPeg(int orientation, int starting_peg, int piece_length);
     void addPieceToBoardArray(int orientation, int starting_peg, int piece_length, char piece_symbol);
+    void setIsHost(bool host);
 };
