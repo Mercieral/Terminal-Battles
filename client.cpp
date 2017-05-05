@@ -26,7 +26,7 @@ void runAsHost();
 void clientGameLoop(int client_socket);
 void hostGameLoop(int client_socket);
 bool acceptClientConnection();
-void displayBoard();
+void displayBoard(Gameboard board);
 
 struct plancoords cursor;
 
@@ -233,7 +233,7 @@ void printClientIP(struct sockaddr_in their_addr)
 	cout << "Connection established with " << s << "\n";
 }
 
-void displayBoard()
+void displayBoard(Gameboard board)
 {
 	initscr();
 	printw(
@@ -252,6 +252,14 @@ void displayBoard()
 		"|10|   |   |   |   |   |   |   |   |   |   |~~~~~|10|   |   |   |   |   |   |   |   |   |   |\n"
 		"--------------------------------------------~~~~~--------------------------------------------\n",
 		"Hi");
+	for(int i=0; i<BOARDSIZE; i++){
+		for (int j=0; j<BOARDSIZE; j++){
+			if (board.boardArray[i][j] != 'w') {
+				move(3+i, 5+(4*j));
+				addch(board.boardArray[i][j]);
+			}
+		}
+	}
 	cursor.y = 3;
 	cursor.x = 5;
 	move(cursor.y, cursor.x);
@@ -264,25 +272,21 @@ void clientGameLoop(int client_socket)
 	Gameboard myBoard = Gameboard(false);
 	myBoard.dummyFunction();
 
-	displayBoard();
+	displayBoard(myBoard);
 
 	while (gameIsRunning)
 	{
 		refresh();
 		//send
 
-		cursor.y = 15;
-		cursor.x = 0;
-		move(cursor.y, cursor.x);
+		move(15, 0);
 		printw("\n");
-		move(cursor.y, cursor.x);
+		move(15, 0);
 		printw("Send message to host: ");
 
 		char *str = (char *)malloc(1024);
 		getstr(str);
-		cursor.y = 15;
-		cursor.x = 0;
-		move(cursor.y, cursor.x);
+		move(15, 0);
 		printw("Waiting for message from host...\n");
 		refresh();
 		//cin.ignore(256, '\n');
@@ -311,9 +315,7 @@ void clientGameLoop(int client_socket)
 		}
 		else
 		{
-			cursor.y = 16;
-			cursor.x = 0;
-			move(cursor.y, cursor.x);
+			move(16, 0);
 			printw(received_msg);
 		}
 	}
@@ -329,7 +331,7 @@ void hostGameLoop(int client_socket)
 	bool gameIsRunning = true;
 	Gameboard myBoard = Gameboard(true);
 	myBoard.dummyFunction();
-	displayBoard();
+	displayBoard(myBoard);
 
 	while (gameIsRunning)
 	{
@@ -350,24 +352,20 @@ void hostGameLoop(int client_socket)
 		}
 		else
 		{
-			cursor.y = 16;
-			cursor.x = 0;
-			move(cursor.y, cursor.x);
+			move(16, 0);
 			printw(received_msg);
 		}
 
-		cursor.y = 15;
-		cursor.x = 0;
-		move(cursor.y, cursor.x);
+		move(15, 0);
 		printw("\n");
-		move(cursor.y, cursor.x);
+		move(15, 0);
 		printw("Send message to client: ");
 
 		char *str = (char *)malloc(1024);
 		getstr(str);
 		cursor.y = 15;
 		cursor.x = 0;
-		move(cursor.y, cursor.x);
+		move(15, 0);
 		printw("Waiting for message from client...\n");
 		refresh();
 		//cin.ignore(256, '\n');

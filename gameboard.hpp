@@ -18,9 +18,10 @@
 
 
 class Gameboard {
-  char boardArray [BOARDSIZE][BOARDSIZE];
+
   bool isHost;
   public:
+    char boardArray [BOARDSIZE][BOARDSIZE];
     Gameboard (bool host);
     void dummyFunction();
     void printBoard ();
