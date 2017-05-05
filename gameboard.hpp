@@ -28,7 +28,7 @@ class Gameboard {
     void initializeBoard();
     void initializeGamePieces();
     void generateBoardPlacement();
-    bool checkStartingPeg(int orientation, int starting_peg, int piece_length);
+    short checkStartingPeg(int orientation, int starting_peg, int piece_length);
     void addPieceToBoardArray(int orientation, int starting_peg, int piece_length, char piece_symbol);
     void setIsHost(bool host);
 };

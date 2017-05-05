@@ -1,7 +1,7 @@
 #include "gameboard.hpp"
 #include "game_piece.hpp"
 #include <iostream>
-#include <ctime>
+#include <sys/time.h>
 #include <cstdlib>
 
 using namespace std;
@@ -50,106 +50,81 @@ void Gameboard::printBoard() {
 }
 
 void Gameboard::generateBoardPlacement() {
-  cout << "Am i host: " << to_string(isHost) << '\n';
+  //cout << "Am i host: " << to_string(isHost) << '\n';
+  timeval t1;
+  gettimeofday(&t1, NULL);
+  if (isHost) {
+    srand(t1.tv_usec * t1.tv_sec + 3000);
+  }
+  else {
+    srand(t1.tv_usec * t1.tv_sec);
+  }
   for (int i = 0; i < 5; i++) {
-    if (isHost) {
-      srand(time(0) + i + 1);
-    }
-    else {
-      srand(time(0) + i);
-    }
     int n = 0;
     int starting_peg = (rand() % 100);
     int orientation = (rand() % 2) + 1;
     int piece_length = piece_array[i].Get_Piece_Length();
     char piece_symbol = piece_array[i].Get_Piece_Symbol();
-    while(true) {
-      if (!checkStartingPeg(orientation, starting_peg, piece_length)) {
-        orientation = (orientation % 2) + 1;
-        starting_peg += 1;
-        if (starting_peg >= 100) {
-          starting_peg = starting_peg / 100;
-        }
-        n += 1;
+    //printf("random for %c peg = %d, orientation = %d\n", piece_symbol, starting_peg, orientation);
+    int ret = 0;
+    while((ret = checkStartingPeg(orientation, starting_peg, piece_length)) != 1) {
+      if (ret == 2) {
+        orientation = (orientation == 1) ? 2 : 1;
+        //printf("failed on wall! flipping orientation for %c peg = %d, orientation = %d\n", piece_symbol, starting_peg, orientation);
+        ret = checkStartingPeg(orientation, starting_peg, piece_length);
+        if (ret == 0) {
+          break;
+        } 
       }
-      else {
-        break;
-      }
-    } //Piece Collision
+        
+      starting_peg = (rand() % 100);
+      orientation = (rand() % 2) + 1;
+      //printf("failed on ship! new random for %c peg = %d, orientation = %d\n", piece_symbol, starting_peg, orientation);
+      n += 1;
+    }
+     //Piece Collision
     addPieceToBoardArray(orientation, starting_peg, piece_length, piece_symbol);
   }
+  // printBoard();
+  // while(true){};
 }
 
-bool Gameboard::checkStartingPeg(int orientation, int starting_peg, int piece_length) {
+// ret - 1 = good, 2 = collided with wall, 3 = collided with ship
+short Gameboard::checkStartingPeg(int orientation, int starting_peg, int piece_length) {
   if (orientation == 1) {
-    if ((starting_peg - (piece_length * 10)) >= 0) {
-      for (int j = 0; j < piece_length; j++) {
-        if (boardArray[(starting_peg / 10)][(starting_peg % 10)] != 'w') {
-          return false;
-        } //Piece collision
-        starting_peg -= 10;
+    for (int j = 0; j < piece_length; j++) {
+      if ((starting_peg / 10) + j >= 10) {
+        return 2;
+      } 
+      else if (boardArray[(starting_peg / 10) + j][(starting_peg % 10)] != 'w') {
+        return 3;
       }
-      return true;
-    } //Piece Placement Up
-    else {
-      for (int j = 0; j < piece_length; j++) {
-        if (boardArray[(starting_peg / 10)][(starting_peg % 10)] != 'w') {
-          return false;
-        } //Piece collision
-        starting_peg += 10;
-      }
-      return true;
-    } //Piece Placement Down
+      //Piece collision
+    }
+    return 1;
   } //Vertical Orientation
   else {
-    if ((starting_peg + piece_length) < (((starting_peg / 10) + 1) * 10)) {
-      for (int j = 0; j < piece_length; j++) {
-        if (boardArray[(starting_peg / 10)][(starting_peg % 10)] != 'w') {
-          return false;
-        } //Piece collision
-        starting_peg += 1;
+    for (int j = 0; j < piece_length; j++) {
+      if ((starting_peg % 10) - j < 0){
+        return 2;
       }
-      return true;
-    } //Piece Placement Right
-    else {
-      for (int j = 0; j < piece_length; j++) {
-        if (boardArray[(starting_peg / 10)][(starting_peg % 10)] != 'w') {
-          return false;
-        } //Piece collision
-        starting_peg -= 1;
-      }
-      return true;
-    } //Piece Placement Left
+      if (boardArray[(starting_peg / 10)][(starting_peg % 10) - j] != 'w') {
+        return 3;
+      } //Piece collision
+    }
+    return 1;
   } //Horizontal Orientation
 }
 
 void Gameboard::addPieceToBoardArray(int orientation, int starting_peg, int piece_length, char piece_symbol) {
   if (orientation == 1) {
-    if ((starting_peg - (piece_length * 10)) >= 0) {
-      for (int j = 0; j < piece_length; j++) {
-        boardArray[(starting_peg / 10)][(starting_peg % 10)] = piece_symbol;
-        starting_peg -= 10;
-      }
-    }
-    else {
-      for (int j = 0; j < piece_length; j++) {
-        boardArray[(starting_peg / 10)][(starting_peg % 10)] = piece_symbol;
-        starting_peg += 10;
-      }
+    for (int j = 0; j < piece_length; j++) {
+      boardArray[(starting_peg / 10)+j][(starting_peg % 10)] = piece_symbol;
     }
   } //Vertical Orientation
   else {
-    if ((starting_peg + piece_length) < (((starting_peg / 10) + 1) * 10)) {
-      for (int j = 0; j < piece_length; j++) {
-        boardArray[(starting_peg / 10)][(starting_peg % 10)] = piece_symbol;
-        starting_peg += 1;
-      }
-    }
-    else {
-      for (int j = 0; j < piece_length; j++) {
-        boardArray[(starting_peg / 10)][(starting_peg % 10)] = piece_symbol;
-        starting_peg -= 1;
-      }
+    for (int j = 0; j < piece_length; j++) {
+      boardArray[(starting_peg / 10)][(starting_peg % 10)-j] = piece_symbol;
     }
   } //Horizontal Orientation
 }
