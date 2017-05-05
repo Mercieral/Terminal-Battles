@@ -261,7 +261,8 @@ void clientGameLoop(int client_socket)
 {
 	char *received_msg = (char *)malloc(1024);
 	bool gameIsRunning = true;
-	Gameboard myBoard;
+	Gameboard myBoard = Gameboard(false);
+	myBoard.dummyFunction();
 
 	displayBoard();
 
@@ -326,8 +327,8 @@ void hostGameLoop(int client_socket)
 {
 	char *received_msg = (char *)malloc(1024);
 	bool gameIsRunning = true;
-	Gameboard myBoard;
-
+	Gameboard myBoard = Gameboard(true);
+	myBoard.dummyFunction();
 	displayBoard();
 
 	while (gameIsRunning)

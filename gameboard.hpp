@@ -1,7 +1,7 @@
 #define BOARDSIZE 10
 
 /**
-  The gameboard class object that handles holding the 2d array and 
+  The gameboard class object that handles holding the 2d array and
   all functions that operateon the array.
 
   The character meanings are as follows -
@@ -19,9 +19,16 @@
 
 class Gameboard {
   char boardArray [BOARDSIZE][BOARDSIZE];
+  bool isHost;
   public:
-    Gameboard ();
+    Gameboard (bool host);
+    void dummyFunction();
     void printBoard ();
   private:
     void initializeBoard();
+    void initializeGamePieces();
+    void generateBoardPlacement();
+    short checkStartingPeg(int orientation, int starting_peg, int piece_length);
+    void addPieceToBoardArray(int orientation, int starting_peg, int piece_length, char piece_symbol);
+    void setIsHost(bool host);
 };
