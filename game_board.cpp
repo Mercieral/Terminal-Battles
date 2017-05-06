@@ -14,7 +14,7 @@ Gameboard::Gameboard(bool host) {
     initializeBoard();
     initializeGamePieces();
     generateBoardPlacement();
-    printBoard();
+//    printBoard();
 }
 
 void Gameboard::initializeBoard() {
