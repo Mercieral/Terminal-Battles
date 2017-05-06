@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <netdb.h>
-#include "gameboard.hpp"
+#include "game_board.hpp"
 
 using namespace std;
 

@@ -27,8 +27,8 @@
 *.exe
 *.out
 *.app
-
 client
+battleship
 TestFiles/battleship
 
 .vscode/settings.json

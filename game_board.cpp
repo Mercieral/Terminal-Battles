@@ -1,4 +1,4 @@
-#include "gameboard.hpp"
+#include "game_board.hpp"
 #include "game_piece.hpp"
 #include <iostream>
 #include <sys/time.h>
