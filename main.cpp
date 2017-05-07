@@ -4,7 +4,7 @@ using namespace std;
 
 int main(int argc, char **argv) {
 
-    cout << "\e[8;25;150t";
+    cout << "\e[8;30;94t";
 
     if (argc == 2) {
         cout << "You are a client connecting to " << argv[1] << "\n";

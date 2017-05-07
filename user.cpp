@@ -137,7 +137,11 @@ void User::displayBoard(Gameboard board) {
                     "| 8|   |   |   |   |   |   |   |   |   |   |~~~~~| 8|   |   |   |   |   |   |   |   |   |   |\n"
                     "| 9|   |   |   |   |   |   |   |   |   |   |~~~~~| 9|   |   |   |   |   |   |   |   |   |   |\n"
                     "|10|   |   |   |   |   |   |   |   |   |   |~~~~~|10|   |   |   |   |   |   |   |   |   |   |\n"
-                    "--------------------------------------------~~~~~--------------------------------------------\n",
+                    "--------------------------------------------~~~~~--------------------------------------------\n"
+                    " TODO display key bindings\n"
+                    " TODO display key bindings\n"
+                    " TODO display key bindings\n"
+                    " TODO display key bindings\n",
             "Hi");
     for (int i = 0; i < BOARDSIZE; i++) {
         for (int j = 0; j < BOARDSIZE; j++) {

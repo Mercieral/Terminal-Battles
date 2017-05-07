@@ -2,6 +2,8 @@ CFLAGS= -g -Wall -Werror
 
 all: build_object_files build_executable remove_object_files
 
+debug: build_object_files build_executable
+
 build_object_files: main.cpp game_piece.cpp game_piece.hpp game_board.cpp game_board.hpp user.hpp user.cpp host.cpp client.cpp
 	$(CXX) $(CFLAGS) -o user.o -c user.cpp
 	$(CXX) $(CFLAGS) -o host.o -c host.cpp
