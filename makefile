@@ -12,7 +12,7 @@ build_object_files: main.cpp game/game_piece.cpp game/game_piece.hpp game/game_b
 	$(CXX) $(CFLAGS) -o game_board.o -c game/game_board.cpp
 	$(CXX) $(CFLAGS) -o main.o -c main.cpp
 
-build_executable: main.o game_board.o game_piece.o client.o host.o user.o
+build_executable:
 	$(CXX) $(CFLAGS) -o battleship main.o game_board.o game_piece.o client.o host.o user.o -lcurses
 
 remove_object_files:
