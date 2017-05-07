@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <netdb.h>
-#include "game_board.hpp"
+#include "../game/game_board.hpp"
 
 #define PORT 8888
 
