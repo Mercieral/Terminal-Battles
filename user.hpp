@@ -34,7 +34,7 @@ public:
 
     void displayBoard(Gameboard board);
 
-    struct plancoords cursor;
+    struct coordinates cursor;
 
     virtual void connect() = 0;
 

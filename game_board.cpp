@@ -18,8 +18,8 @@ Gameboard::Gameboard(bool host) {
 }
 
 void Gameboard::initializeBoard() {
-    for (int i = 0; i < BOARDSIZE; i++) {
-        for (int j = 0; j < BOARDSIZE; j++) {
+    for (int i = 0; i < BOARD_SIZE; i++) {
+        for (int j = 0; j < BOARD_SIZE; j++) {
             boardArray[i][j] = 'w';
         }
     }
@@ -40,8 +40,8 @@ void Gameboard::initializeGamePieces() {
 
 void Gameboard::printBoard() {
     cout << "------ Printing Game board ------\n";
-    for (int i = 0; i < BOARDSIZE; i++) {
-        for (int j = 0; j < BOARDSIZE; j++) {
+    for (int i = 0; i < BOARD_SIZE; i++) {
+        for (int j = 0; j < BOARD_SIZE; j++) {
             cout << boardArray[i][j] << " ";
         }
         cout << "\n";

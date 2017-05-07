@@ -21,7 +21,7 @@ class Gameboard {
 
     bool isHost;
 public:
-    char boardArray[BOARDSIZE][BOARDSIZE];
+    char boardArray[BOARD_SIZE][BOARD_SIZE];
 
     Gameboard(bool host);
 
