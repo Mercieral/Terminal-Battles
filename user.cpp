@@ -156,9 +156,9 @@ void User::displayBoard(Gameboard board) {
     move(cursor.y, cursor.x);
 }
 
-void User::printClientIP(struct sockaddr_in their_addr) {
+void User::printClientIP(struct sockaddr_in their_address) {
     char s[INET6_ADDRSTRLEN];
-    inet_ntop(their_addr.sin_family, &their_addr.sin_addr, s, sizeof(s));
+    inet_ntop(their_address.sin_family, &their_address.sin_addr, s, sizeof(s));
     cout << "Connection established with " << s << "\n";
 }
 

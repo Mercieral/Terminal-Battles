@@ -1,7 +1,7 @@
 #include "user.hpp"
 
 void Client::connect() {
-    struct sockaddr_in serverAddr;
+    struct sockaddr_in server_address;
     unsigned short serverPort;
 
     serverPort = PORT;
@@ -11,14 +11,14 @@ void Client::connect() {
     cout << "Created the client socket\n";
 
     //Initialize the endpoint structure
-    memset(&serverAddr, 0, sizeof(serverAddr));
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_addr.s_addr = resolveName(serverName);
-    serverAddr.sin_port = htons(serverPort);
+    memset(&server_address, 0, sizeof(server_address));
+    server_address.sin_family = AF_INET;
+    server_address.sin_addr.s_addr = resolveName(serverName);
+    server_address.sin_port = htons(serverPort);
     cout << "Created the endpoint structure\n";
 
     // Active open
-    if (::connect(client_socket, (const struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
+    if (::connect(client_socket, (const struct sockaddr *) &server_address, sizeof(server_address)) < 0) {
         cout << "Error trying to accept client connection. Error = " << strerror(errno) << "\n";
         close(client_socket);
         exit(1);
@@ -46,7 +46,7 @@ void Client::connect() {
 unsigned long Client::resolveName(const char *name) {
     struct hostent *host;
     if ((host = gethostbyname(name)) == NULL) {
-        perror("gethostbyname() failed");
+        perror("getHostByName() failed");
         exit(1);
     }
     return *((unsigned long *) host->h_addr_list[0]);

@@ -15,20 +15,20 @@
 
 using namespace std;
 
-struct plancoords {
+struct coordinates {
     int y, x;
 };
 
 
 /**
- * User abstract class that implements duplicative code
+ * User abstract class that implements duplicate code
  * between a client and host.
  */
 class User {
 
 public:
 
-    void printClientIP(struct sockaddr_in their_addr);
+    void printClientIP(struct sockaddr_in their_address);
 
     void gameLoop();
 
@@ -44,7 +44,7 @@ protected:
 
     bool isHost;
 
-    User(bool isHost): isHost(isHost) {}
+    User(bool isHost) : isHost(isHost) {}
 };
 
 /**
@@ -54,7 +54,9 @@ protected:
 class Host : public User {
 public:
     Host() : User(true) {}
+
     void connect();
+
 private:
     bool acceptClientConnection();
 };
@@ -66,11 +68,13 @@ private:
  */
 class Client : public User {
 public:
-    Client(char* serverName) : User(false), serverName(serverName)  {}
+    Client(char *serverName) : User(false), serverName(serverName) {}
+
     void connect();
+
 private:
     static unsigned long resolveName(const char *name);
 
 protected:
-    char* serverName;
+    char *serverName;
 };

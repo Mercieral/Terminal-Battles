@@ -1,8 +1,8 @@
-#define BOARDSIZE 10
+#define BOARD_SIZE 10
 
 /**
   The gameboard class object that handles holding the 2d array and
-  all functions that operateon the array.
+  all functions that operation the array.
 
   The character meanings are as follows -
   'w' - water

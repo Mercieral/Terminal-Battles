@@ -2,13 +2,13 @@
 
 void Host::connect() {
     int host_socket;
-    struct sockaddr_in serverAddr;
+    struct sockaddr_in server_address;
 
     //Initialize the endpoint structure
-    memset(&serverAddr, 0, sizeof(serverAddr));
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_addr.s_addr = INADDR_ANY;
-    serverAddr.sin_port = htons(PORT);
+    memset(&server_address, 0, sizeof(server_address));
+    server_address.sin_family = AF_INET;
+    server_address.sin_addr.s_addr = INADDR_ANY;
+    server_address.sin_port = htons(PORT);
     cout << "Created the endpoint structure\n";
 
     //Create socket
@@ -22,11 +22,11 @@ void Host::connect() {
 
     int on = 1;
     if (setsockopt(host_socket, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0) {
-        cout << "Something went wrong when settting socket options... " << strerror(errno) << "\n";
+        cout << "Something went wrong when setting socket options... " << strerror(errno) << "\n";
     }
 
     //Passive Open
-    if (bind(host_socket, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
+    if (bind(host_socket, (struct sockaddr *) &server_address, sizeof(server_address)) < 0) {
         cout << "Error trying to bind and connect socket. Error = " << strerror(errno) << "\n";
         close(host_socket);
         exit(1);
@@ -34,13 +34,11 @@ void Host::connect() {
     listen(host_socket, 5);
     cout << "Socket bound and listening\n";
 
-    struct sockaddr_in client_addr;
-    socklen_t addr_size = sizeof(client_addr);
+    struct sockaddr_in client_address;
+    socklen_t address_size = sizeof(client_address);
 
-    bool isRunning = true;
-
-    while (isRunning) {
-        if ((client_socket = accept(host_socket, (struct sockaddr *) &client_addr, &addr_size)) < 0) {
+    while (true) {
+        if ((client_socket = accept(host_socket, (struct sockaddr *) &client_address, &address_size)) < 0) {
             cout << "Error trying to accept client connection. Error = " << strerror(errno) << "\n";
             close(host_socket);
             exit(1);
@@ -58,7 +56,7 @@ void Host::connect() {
     }
 }
 
-//Lets the host accpet or reject an established connection with a client
+//Lets the host accept or reject an established connection with a client
 bool Host::acceptClientConnection() {
     cout << "Would you like to accept the connection, Y/N?\n";
     string user_input;
