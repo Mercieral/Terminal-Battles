@@ -74,7 +74,8 @@ void User::gameLoop(int client_socket)
                 if (c == 'h' || c == 'm')
                 {
                     move(23, 52);
-                    printw("You already attacked there! Try again\n");
+                    printw("You already attacked there! Try again             ");
+                    move(24, 52);
                     refresh();
                     break;
                 }
@@ -124,7 +125,8 @@ void User::gameLoop(int client_socket)
         else
         {
             move(23, 52);
-            printw("Waiting for enemy...\n");
+            printw("Waiting for enemy...                    ");
+            move(24, 52);
             refresh();
             coordinates attack_coords;
             if (recv(client_socket, &attack_coords, sizeof(attack_coords), MSG_WAITALL) == -1)
@@ -304,8 +306,9 @@ void User::printClientIP(struct sockaddr_in their_address)
 char User::handleAttack(coordinates attack_coords, int client_socket, Gameboard board)
 {
     move(23, 52);
-    string print_msg = "Attack recieved: x = " + to_string(attack_coords.x) + ", y = " + to_string(attack_coords.y) + "\n";
+    string print_msg = "Attack recieved: x = " + to_string(attack_coords.x) + ", y = " + to_string(attack_coords.y) + "                   ";
     printw(print_msg.c_str());
+    move(24, 52);
     char result;
     if (board.boardArray[attack_coords.y][attack_coords.x] != 'w')
     {
