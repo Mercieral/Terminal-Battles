@@ -19,4 +19,4 @@ remove_object_files:
 	rm -f *.o
 
 clean:
-	rm -f *.o battleship
+	rm -f *.o battleship client
