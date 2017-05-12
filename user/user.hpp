@@ -30,7 +30,7 @@ public:
 
     void printClientIP(struct sockaddr_in their_address);
 
-    void gameLoop();
+    void gameLoop(int client_socket);
 
     void displayBoard(Gameboard board);
 

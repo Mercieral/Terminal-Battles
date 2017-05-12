@@ -1,43 +1,86 @@
 #include "user.hpp"
 
-void User::gameLoop() {
+void User::gameLoop(int client_socket) {
     char *received_msg = (char *) malloc(1024);
+    const char *msg = "Your Turn\n";
     bool gameIsRunning = true;
+    bool isMyTurn = true;
 
     Gameboard myBoard = Gameboard(isHost);
     displayBoard(myBoard);
+    int x_pos = 0;
+    int y_pos = 0;
+
+    if (!isHost) {
+      refresh();
+      isMyTurn = false;
+    } //Is a client
 
     while (gameIsRunning) {
 
+      if (isMyTurn) {
         switch (getch()) {
             case KEY_LEFT:
             case 'a':
-                if (cursor.x > 57) cursor.x -= 4;
+                if (cursor.x > 57) {
+                  cursor.x -= 4;
+                  x_pos--;
+                }
                 break;
             case KEY_RIGHT:
             case 'd':
-                if (cursor.x < 91) cursor.x += 4;
+                if (cursor.x < 91) {
+                  cursor.x += 4;
+                  x_pos++;
+                }
                 break;
             case KEY_UP:
             case 'w':
-                if (cursor.y > 9) cursor.y -= 1;
+                if (cursor.y > 9) {
+                  cursor.y -= 1;
+                  y_pos--;
+                }
                 break;
             case KEY_DOWN:
             case 's':
-                if (cursor.y < 18) cursor.y += 1;
+                if (cursor.y < 18) {
+                  cursor.y += 1;
+                  y_pos++;
+                }
                 break;
             case 'q':
                 endwin(); // Finishes graphics
-                cout << "Ending game";
+                cout << "Ending game due to a player quiting\n";
                 close(client_socket);
                 free(received_msg);
                 gameIsRunning = false;
                 exit(1);
+            case 10:
+                //do something
+                isMyTurn = false;
+                send(client_socket, msg, strlen(msg), 0);
+                break;
             default:
                 break;
         }
         move(cursor.y, cursor.x);
         refresh();
+      } //Take Your Turn
+      else {
+        move(25, 5);
+        printw("It is not your turn, wait for your opponent to take his turn");
+        refresh();
+        if (recv(client_socket, received_msg, 1024, 0) == -1) {
+          //handle error
+        }
+        move(25, 5);
+        printw(received_msg);
+        isMyTurn = true;
+        move(cursor.y, cursor.x);
+        refresh();
+      } //Wait For Your Turn
+
+
 
         // ******** OLD CLIENT GAME LOOP ********
         // refresh();
@@ -158,5 +201,3 @@ void User::printClientIP(struct sockaddr_in their_address) {
     inet_ntop(their_address.sin_family, &their_address.sin_addr, s, sizeof(s));
     cout << "Connection established with " << s << "\n";
 }
-
-
