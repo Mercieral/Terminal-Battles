@@ -11,10 +11,12 @@ int main(int argc, char **argv) {
 
     printf("\e[8;30;101t");
     initscr();
+    start_color();
+    init_pair(1, COLOR_BLACK, COLOR_WHITE);
     resizeterm(30, 101);
     noecho();
     refresh();
-
+    attron(COLOR_PAIR(1));
     keypad(stdscr, TRUE);
     printw(
             " ______     ______     ______   ______   __         ______     ______     __  __     __     ______  \n"
