@@ -73,7 +73,7 @@ void User::gameLoop(int client_socket)
                 c = inch() & A_CHARTEXT;
                 if (c == 'h' || c == 'm')
                 {
-                    move(29, 5);
+                    move(23, 52);
                     printw("You already attacked there! Try again\n");
                     refresh();
                     break;
@@ -123,8 +123,8 @@ void User::gameLoop(int client_socket)
         } //Take Your Turn
         else
         {
-            move(25, 5);
-            printw("It is not your turn, wait for your opponent to take his turn");
+            move(23, 52);
+            printw("Waiting for enemy...\n");
             refresh();
             coordinates attack_coords;
             if (recv(client_socket, &attack_coords, sizeof(attack_coords), MSG_WAITALL) == -1)
@@ -247,11 +247,21 @@ void User::displayBoard(Gameboard board)
         "   | 9|   |   |   |   |   |   |   |   |   |   |~~~~~| 9|   |   |   |   |   |   |   |   |   |   |\n"
         "   |10|   |   |   |   |   |   |   |   |   |   |~~~~~|10|   |   |   |   |   |   |   |   |   |   |\n"
         "   --------------------------------------------~~~~~--------------------------------------------\n"
-        " TODO display key bindings\n"
-        " TODO display key bindings\n"
-        " TODO display key bindings\n"
-        " TODO display key bindings\n",
-        "Hi");
+        "                                                ||\n"
+        "                                                ||\n"
+        "                                                ||\n"
+        " w, up arrow    - move the cursor up            ||\n"
+        " a, left arrow  - move the cursor left          ||\n"
+        " s, down arrow  - move the cursor down          ||\n"
+        " d, right arrow - move the cursor right         ||\n"
+        " q              - quit the game                 ||\n"
+        " enter          - send attack (Your turn only)  ||\n");
+    attron(A_UNDERLINE);
+    move(21, 1);
+    printw("instructions");
+    move(21, 52);
+    printw("log");
+    attroff(A_UNDERLINE);
     for (int i = 0; i < BOARD_SIZE; i++)
     {
         for (int j = 0; j < BOARD_SIZE; j++)
@@ -293,7 +303,7 @@ void User::printClientIP(struct sockaddr_in their_address)
 
 char User::handleAttack(coordinates attack_coords, int client_socket, Gameboard board)
 {
-    move(25, 5);
+    move(23, 52);
     string print_msg = "Attack recieved: x = " + to_string(attack_coords.x) + ", y = " + to_string(attack_coords.y) + "\n";
     printw(print_msg.c_str());
     char result;
