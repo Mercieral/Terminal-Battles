@@ -71,7 +71,13 @@ void User::gameLoop(int client_socket)
                 send(client_socket, &grid_pos, sizeof(grid_pos), 0);
                 char answer;
                 recv(client_socket, &answer, sizeof(char), MSG_WAITALL);
+                if (answer == 'h') {
+                  attron(COLOR_PAIR(4));
+                } else if (answer == 'm') {
+                  attron(COLOR_PAIR(3));
+                }
                 addch(answer);
+                attron(COLOR_PAIR(1));
                 break;
             default:
                 break;
@@ -244,13 +250,13 @@ void User::handleAttack(coordinates attack_coords, int client_socket, Gameboard 
     char result;
     if (board.boardArray[attack_coords.y][attack_coords.x] != 'w')
     {
-        printw("\nMiss!");
+        printw("\nHit!");
         result = 'h';
         send(client_socket, &result, sizeof(char), 0);
     }
     else
     {
-        printw("\nHit!");
+        printw("\nMiss!");
         result = 'm';
         send(client_socket, &result, sizeof(char), 0);
     }
