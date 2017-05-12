@@ -1,7 +1,7 @@
-UNAME = $(uname)
+UNAME = $(shell uname)
 D = Darwin
-$(OS: $(UNAME))
-ifeq ( $(UNAME), $(D))
+$(info UNAME is $(UNAME))
+ifeq ($(UNAME),$(D))
 CFLAGS = -g -Wall -Werror
 else
 CFLAGS= -g -Wall -Werror -std=c++11
