@@ -1,4 +1,4 @@
-CFLAGS= -g -Wall -Werror
+CFLAGS= -g -Wall -Werror -std=c++11
 
 all: build_object_files build_executable remove_object_files
 

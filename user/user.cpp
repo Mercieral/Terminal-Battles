@@ -189,11 +189,25 @@ void User::displayBoard(Gameboard board) {
     for (int i = 0; i < BOARD_SIZE; i++) {
         for (int j = 0; j < BOARD_SIZE; j++) {
             if (board.boardArray[i][j] != 'w') {
+                attron(COLOR_PAIR(2));
                 move(3 + i + 6, 8 + (4 * j));
                 addch(board.boardArray[i][j]);
+                move(3 + i + 6, 8 + (4 * j)-1);
+                addch(' ');
+                move(3 + i + 6, 8 + (4 * j)+1);
+                addch(' ');
+            } else {
+              attron(COLOR_PAIR(3));
+              move(3 + i + 6, 8 + (4 * j));
+              addch(' ');
+              move(3 + i + 6, 8 + (4 * j)-1);
+              addch(' ');
+              move(3 + i + 6, 8 + (4 * j)+1);
+              addch(' ');
             }
         }
     }
+    attron(COLOR_PAIR(1));
     cursor.y = 9;
     cursor.x = 57;
     move(cursor.y, cursor.x);

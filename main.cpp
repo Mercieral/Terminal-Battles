@@ -13,7 +13,13 @@ int main(int argc, char **argv) {
     printf("\e[8;30;101t");
     initscr();
     start_color();
-    init_pair(1, COLOR_BLACK, COLOR_WHITE);
+
+    init_color(COLOR_CYAN, 250,250,250);
+    init_color(COLOR_BLACK, 0, 0, 0);
+
+    init_pair(1, COLOR_WHITE, COLOR_BLACK);
+    init_pair(2, COLOR_WHITE, COLOR_CYAN);
+    init_pair(3, COLOR_WHITE, COLOR_BLUE);
     resizeterm(30, 101);
     noecho();
     refresh();
