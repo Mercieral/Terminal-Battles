@@ -6,6 +6,8 @@ void User::gameLoop(int client_socket)
     //const char *msg = "Your Turn\n";
     bool gameIsRunning = true;
     bool isMyTurn = true;
+    int hitsOnEnemy = 0;
+    int hitsOnSelf = 0;
 
     Gameboard myBoard = Gameboard(isHost);
     displayBoard(myBoard);
@@ -71,10 +73,20 @@ void User::gameLoop(int client_socket)
                 send(client_socket, &grid_pos, sizeof(grid_pos), 0);
                 char answer;
                 recv(client_socket, &answer, sizeof(char), MSG_WAITALL);
-                if (answer == 'h') {
-                  attron(COLOR_PAIR(4));
-                } else if (answer == 'm') {
-                  attron(COLOR_PAIR(3));
+                if (answer == 'h')
+                {
+                    hitsOnEnemy++;
+                    if (hitsOnEnemy == MAX_HITS)
+                    {
+                        move(25, 5);
+                        printw("You Won!!!!\n");
+                        refresh();
+                    }
+                    attron(COLOR_PAIR(4));
+                }
+                else if (answer == 'm')
+                {
+                    attron(COLOR_PAIR(3));
                 }
                 move(cursor.y, cursor.x - 1);
                 addch(' ');
@@ -100,7 +112,17 @@ void User::gameLoop(int client_socket)
             {
                 //handle error
             }
-            handleAttack(attack_coords, client_socket, myBoard);
+            char result = handleAttack(attack_coords, client_socket, myBoard);
+            if (result == 'h')
+            {
+                hitsOnSelf++;
+                if (hitsOnSelf == MAX_HITS)
+                {
+                    move(25, 5);
+                    printw("Enemy Won!!!!\n");
+                    refresh();
+                }
+            }
             isMyTurn = true;
             move(cursor.y, cursor.x);
             refresh();
@@ -247,7 +269,7 @@ void User::printClientIP(struct sockaddr_in their_address)
     cout << "Connection established with " << s << "\n";
 }
 
-void User::handleAttack(coordinates attack_coords, int client_socket, Gameboard board)
+char User::handleAttack(coordinates attack_coords, int client_socket, Gameboard board)
 {
     move(25, 5);
     string print_msg = "Attack recieved: x = " + to_string(attack_coords.x) + ", y = " + to_string(attack_coords.y);
@@ -258,11 +280,13 @@ void User::handleAttack(coordinates attack_coords, int client_socket, Gameboard 
         printw("\nHit!");
         result = 'h';
         send(client_socket, &result, sizeof(char), 0);
+        return result;
     }
     else
     {
         printw("\nMiss!");
         result = 'm';
         send(client_socket, &result, sizeof(char), 0);
+        return result;
     }
 }
