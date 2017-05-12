@@ -71,7 +71,7 @@ void User::gameLoop(int client_socket)
             case 10:
                 //do something
                 c = inch() & A_CHARTEXT;
-                if (c == 'h' | c == 'm')
+                if (c == 'h' || c == 'm')
                 {
                     move(29, 5);
                     printw("You already attacked there! Try again\n");
