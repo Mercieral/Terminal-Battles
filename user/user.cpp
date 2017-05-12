@@ -279,6 +279,10 @@ char User::handleAttack(coordinates attack_coords, int client_socket, Gameboard 
     {
         printw("\nHit!");
         result = 'h';
+        attron(COLOR_PAIR(4));
+        move(3 + attack_coords.y + 6, 8 + (4 * attack_coords.x));
+        addch('X');
+        attron(COLOR_PAIR(1));
         send(client_socket, &result, sizeof(char), 0);
         return result;
     }
@@ -286,6 +290,10 @@ char User::handleAttack(coordinates attack_coords, int client_socket, Gameboard 
     {
         printw("\nMiss!");
         result = 'm';
+        attron(COLOR_PAIR(3));
+        move(3 + attack_coords.y + 6, 8 + (4 * attack_coords.x));
+        addch('X');
+        attron(COLOR_PAIR(1));
         send(client_socket, &result, sizeof(char), 0);
         return result;
     }
