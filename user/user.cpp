@@ -76,6 +76,11 @@ void User::gameLoop(int client_socket)
                 } else if (answer == 'm') {
                   attron(COLOR_PAIR(3));
                 }
+                move(cursor.y, cursor.x - 1);
+                addch(' ');
+                move(cursor.y, cursor.x + 1);
+                addch(' ');
+                move(cursor.y, cursor.x);
                 addch(answer);
                 attron(COLOR_PAIR(1));
                 break;
