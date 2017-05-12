@@ -91,6 +91,12 @@ void User::gameLoop(int client_socket)
                     if (answer == 'h')
                     {
                         hitsOnEnemy++;
+                        int b = beep();
+                        if(b == ERR){
+                          move(25, 52);
+                          printw("Did not beep\n");
+                          refresh();
+                        }
                         if (hitsOnEnemy == MAX_HITS)
                         {
                             endwin(); // Finishes graphics
