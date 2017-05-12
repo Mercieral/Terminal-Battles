@@ -1,7 +1,8 @@
 #include "user.hpp"
 
-void User::gameLoop(int client_socket) {
-    char *received_msg = (char *) malloc(1024);
+void User::gameLoop(int client_socket)
+{
+    char *received_msg = (char *)malloc(1024);
     //const char *msg = "Your Turn\n";
     bool gameIsRunning = true;
     bool isMyTurn = true;
@@ -12,41 +13,49 @@ void User::gameLoop(int client_socket) {
     grid_pos.x = 0;
     grid_pos.y = 0;
 
-    if (!isHost) {
-      refresh();
-      isMyTurn = false;
+    if (!isHost)
+    {
+        refresh();
+        isMyTurn = false;
     } //Is a client
 
-    while (gameIsRunning) {
+    while (gameIsRunning)
+    {
 
-      if (isMyTurn) {
-        switch (getch()) {
+        if (isMyTurn)
+        {
+            switch (getch())
+            {
             case KEY_LEFT:
             case 'a':
-                if (cursor.x > 57) {
-                  cursor.x -= 4;
-                  grid_pos.x--;
+                if (cursor.x > 57)
+                {
+                    cursor.x -= 4;
+                    grid_pos.x--;
                 }
                 break;
             case KEY_RIGHT:
             case 'd':
-                if (cursor.x < 91) {
-                  cursor.x += 4;
-                  grid_pos.x++;
+                if (cursor.x < 91)
+                {
+                    cursor.x += 4;
+                    grid_pos.x++;
                 }
                 break;
             case KEY_UP:
             case 'w':
-                if (cursor.y > 9) {
-                  cursor.y -= 1;
-                  grid_pos.y--;
+                if (cursor.y > 9)
+                {
+                    cursor.y -= 1;
+                    grid_pos.y--;
                 }
                 break;
             case KEY_DOWN:
             case 's':
-                if (cursor.y < 18) {
-                  cursor.y += 1;
-                  grid_pos.y++;
+                if (cursor.y < 18)
+                {
+                    cursor.y += 1;
+                    grid_pos.y++;
                 }
                 break;
             case 'q':
@@ -60,30 +69,31 @@ void User::gameLoop(int client_socket) {
                 //do something
                 isMyTurn = false;
                 send(client_socket, &grid_pos, sizeof(grid_pos), 0);
+                char answer;
+                recv(client_socket, &answer, sizeof(char), MSG_WAITALL);
+                addch(answer);
                 break;
             default:
                 break;
-        }
-        move(cursor.y, cursor.x);
-        refresh();
-      } //Take Your Turn
-      else {
-        move(25, 5);
-        printw("It is not your turn, wait for your opponent to take his turn");
-        refresh();
-        coordinates attack_coords;
-        if (recv(client_socket, &attack_coords, sizeof(attack_coords), MSG_WAITALL) == -1) {
-          //handle error
-        }
-        move(25, 5);
-        string print_msg = "Attack recieved: x = " + to_string(attack_coords.x) + ", y = " + to_string(attack_coords.y);
-        printw(print_msg.c_str());
-        isMyTurn = true;
-        move(cursor.y, cursor.x);
-        refresh();
-      } //Wait For Your Turn
-
-
+            }
+            move(cursor.y, cursor.x);
+            refresh();
+        } //Take Your Turn
+        else
+        {
+            move(25, 5);
+            printw("It is not your turn, wait for your opponent to take his turn");
+            refresh();
+            coordinates attack_coords;
+            if (recv(client_socket, &attack_coords, sizeof(attack_coords), MSG_WAITALL) == -1)
+            {
+                //handle error
+            }
+            handleAttack(attack_coords, client_socket, myBoard);
+            isMyTurn = true;
+            move(cursor.y, cursor.x);
+            refresh();
+        } //Wait For Your Turn
 
         // ******** OLD CLIENT GAME LOOP ********
         // refresh();
@@ -164,46 +174,52 @@ void User::gameLoop(int client_socket) {
     }
 }
 
-void User::displayBoard(Gameboard board) {
+void User::displayBoard(Gameboard board)
+{
     move(6, 0);
     printw(
-            "   --------------------Your Board--------------~~~~~--------------------Opp. Board--------------\n"
-                    "   ____________________________________________~~~~~____________________________________________\n"
-                    "   |  | A | B | C | D | E | F | G | H | I | J |~~~~~|  | A | B | C | D | E | F | G | H | I | J |\n"
-                    "   | 1|   |   |   |   |   |   |   |   |   |   |~~~~~| 1|   |   |   |   |   |   |   |   |   |   |\n"
-                    "   | 2|   |   |   |   |   |   |   |   |   |   |~~~~~| 2|   |   |   |   |   |   |   |   |   |   |\n"
-                    "   | 3|   |   |   |   |   |   |   |   |   |   |~~~~~| 3|   |   |   |   |   |   |   |   |   |   |\n"
-                    "   | 4|   |   |   |   |   |   |   |   |   |   |~~~~~| 4|   |   |   |   |   |   |   |   |   |   |\n"
-                    "   | 5|   |   |   |   |   |   |   |   |   |   |~~~~~| 5|   |   |   |   |   |   |   |   |   |   |\n"
-                    "   | 6|   |   |   |   |   |   |   |   |   |   |~~~~~| 6|   |   |   |   |   |   |   |   |   |   |\n"
-                    "   | 7|   |   |   |   |   |   |   |   |   |   |~~~~~| 7|   |   |   |   |   |   |   |   |   |   |\n"
-                    "   | 8|   |   |   |   |   |   |   |   |   |   |~~~~~| 8|   |   |   |   |   |   |   |   |   |   |\n"
-                    "   | 9|   |   |   |   |   |   |   |   |   |   |~~~~~| 9|   |   |   |   |   |   |   |   |   |   |\n"
-                    "   |10|   |   |   |   |   |   |   |   |   |   |~~~~~|10|   |   |   |   |   |   |   |   |   |   |\n"
-                    "   --------------------------------------------~~~~~--------------------------------------------\n"
-                    " TODO display key bindings\n"
-                    " TODO display key bindings\n"
-                    " TODO display key bindings\n"
-                    " TODO display key bindings\n",
-            "Hi");
-    for (int i = 0; i < BOARD_SIZE; i++) {
-        for (int j = 0; j < BOARD_SIZE; j++) {
-            if (board.boardArray[i][j] != 'w') {
+        "   --------------------Your Board--------------~~~~~--------------------Opp. Board--------------\n"
+        "   ____________________________________________~~~~~____________________________________________\n"
+        "   |  | A | B | C | D | E | F | G | H | I | J |~~~~~|  | A | B | C | D | E | F | G | H | I | J |\n"
+        "   | 1|   |   |   |   |   |   |   |   |   |   |~~~~~| 1|   |   |   |   |   |   |   |   |   |   |\n"
+        "   | 2|   |   |   |   |   |   |   |   |   |   |~~~~~| 2|   |   |   |   |   |   |   |   |   |   |\n"
+        "   | 3|   |   |   |   |   |   |   |   |   |   |~~~~~| 3|   |   |   |   |   |   |   |   |   |   |\n"
+        "   | 4|   |   |   |   |   |   |   |   |   |   |~~~~~| 4|   |   |   |   |   |   |   |   |   |   |\n"
+        "   | 5|   |   |   |   |   |   |   |   |   |   |~~~~~| 5|   |   |   |   |   |   |   |   |   |   |\n"
+        "   | 6|   |   |   |   |   |   |   |   |   |   |~~~~~| 6|   |   |   |   |   |   |   |   |   |   |\n"
+        "   | 7|   |   |   |   |   |   |   |   |   |   |~~~~~| 7|   |   |   |   |   |   |   |   |   |   |\n"
+        "   | 8|   |   |   |   |   |   |   |   |   |   |~~~~~| 8|   |   |   |   |   |   |   |   |   |   |\n"
+        "   | 9|   |   |   |   |   |   |   |   |   |   |~~~~~| 9|   |   |   |   |   |   |   |   |   |   |\n"
+        "   |10|   |   |   |   |   |   |   |   |   |   |~~~~~|10|   |   |   |   |   |   |   |   |   |   |\n"
+        "   --------------------------------------------~~~~~--------------------------------------------\n"
+        " TODO display key bindings\n"
+        " TODO display key bindings\n"
+        " TODO display key bindings\n"
+        " TODO display key bindings\n",
+        "Hi");
+    for (int i = 0; i < BOARD_SIZE; i++)
+    {
+        for (int j = 0; j < BOARD_SIZE; j++)
+        {
+            if (board.boardArray[i][j] != 'w')
+            {
                 attron(COLOR_PAIR(2));
                 move(3 + i + 6, 8 + (4 * j));
                 addch(board.boardArray[i][j]);
-                move(3 + i + 6, 8 + (4 * j)-1);
+                move(3 + i + 6, 8 + (4 * j) - 1);
                 addch(' ');
-                move(3 + i + 6, 8 + (4 * j)+1);
+                move(3 + i + 6, 8 + (4 * j) + 1);
                 addch(' ');
-            } else {
-              attron(COLOR_PAIR(3));
-              move(3 + i + 6, 8 + (4 * j));
-              addch(' ');
-              move(3 + i + 6, 8 + (4 * j)-1);
-              addch(' ');
-              move(3 + i + 6, 8 + (4 * j)+1);
-              addch(' ');
+            }
+            else
+            {
+                attron(COLOR_PAIR(3));
+                move(3 + i + 6, 8 + (4 * j));
+                addch(' ');
+                move(3 + i + 6, 8 + (4 * j) - 1);
+                addch(' ');
+                move(3 + i + 6, 8 + (4 * j) + 1);
+                addch(' ');
             }
         }
     }
@@ -213,8 +229,29 @@ void User::displayBoard(Gameboard board) {
     move(cursor.y, cursor.x);
 }
 
-void User::printClientIP(struct sockaddr_in their_address) {
+void User::printClientIP(struct sockaddr_in their_address)
+{
     char s[INET6_ADDRSTRLEN];
     inet_ntop(their_address.sin_family, &their_address.sin_addr, s, sizeof(s));
     cout << "Connection established with " << s << "\n";
+}
+
+void User::handleAttack(coordinates attack_coords, int client_socket, Gameboard board)
+{
+    move(25, 5);
+    string print_msg = "Attack recieved: x = " + to_string(attack_coords.x) + ", y = " + to_string(attack_coords.y);
+    printw(print_msg.c_str());
+    char result;
+    if (board.boardArray[attack_coords.y][attack_coords.x] != 'w')
+    {
+        printw("\nMiss!");
+        result = 'h';
+        send(client_socket, &result, sizeof(char), 0);
+    }
+    else
+    {
+        printw("\nHit!");
+        result = 'm';
+        send(client_socket, &result, sizeof(char), 0);
+    }
 }

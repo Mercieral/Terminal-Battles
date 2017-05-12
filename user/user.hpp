@@ -45,6 +45,8 @@ protected:
     bool isHost;
 
     User(bool isHost) : isHost(isHost) {}
+
+    void handleAttack(coordinates attack_coords, int client_socket, Gameboard board);
 };
 
 /**

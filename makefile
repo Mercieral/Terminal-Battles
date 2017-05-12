@@ -1,4 +1,9 @@
-CFLAGS= -g -Wall -Werror -std=c++11
+CFLAGS= -g -Wall -Werror
+
+UNAME := $(shell uname)
+ifeq ( $(UNAME), Linux) 
+CFLAGS = $(CFLAGS) -std=c++11
+endif
 
 all: build_object_files build_executable remove_object_files
 
