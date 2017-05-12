@@ -26,6 +26,7 @@ void User::gameLoop(int client_socket)
 
         if (isMyTurn)
         {
+            char c;
             switch (getch())
             {
             case KEY_LEFT:
@@ -69,33 +70,51 @@ void User::gameLoop(int client_socket)
                 exit(1);
             case 10:
                 //do something
-                isMyTurn = false;
-                send(client_socket, &grid_pos, sizeof(grid_pos), 0);
-                char answer;
-                recv(client_socket, &answer, sizeof(char), MSG_WAITALL);
-                if (answer == 'h')
+                c = inch() & A_CHARTEXT;
+                if (c == 'h' | c == 'm')
                 {
-                    hitsOnEnemy++;
-                    if (hitsOnEnemy == MAX_HITS)
+                    move(29, 5);
+                    printw("You already attacked there! Try again\n");
+                    refresh();
+                    break;
+                }
+                else
+                {
+                    move(29, 5);
+                    printw("\n");
+                    refresh();
+                    isMyTurn = false;
+                    send(client_socket, &grid_pos, sizeof(grid_pos), 0);
+                    char answer;
+                    recv(client_socket, &answer, sizeof(char), MSG_WAITALL);
+                    if (answer == 'h')
                     {
-                        move(25, 5);
-                        printw("You Won!!!!\n");
-                        refresh();
+                        hitsOnEnemy++;
+                        if (hitsOnEnemy == MAX_HITS)
+                        {
+                            endwin(); // Finishes graphics
+                            cout << "You won!\n";
+                            close(client_socket);
+                            free(received_msg);
+                            gameIsRunning = false;
+                            exit(1);
+                        }
+                        attron(COLOR_PAIR(4));
                     }
-                    attron(COLOR_PAIR(4));
+                    else if (answer == 'm')
+                    {
+                        attron(COLOR_PAIR(3));
+                    }
+                    move(cursor.y, cursor.x - 1);
+                    addch(' ');
+                    move(cursor.y, cursor.x + 1);
+                    addch(' ');
+                    move(cursor.y, cursor.x);
+                    addch(answer);
+                    attron(COLOR_PAIR(1));
+                    break;
                 }
-                else if (answer == 'm')
-                {
-                    attron(COLOR_PAIR(3));
-                }
-                move(cursor.y, cursor.x - 1);
-                addch(' ');
-                move(cursor.y, cursor.x + 1);
-                addch(' ');
-                move(cursor.y, cursor.x);
-                addch(answer);
-                attron(COLOR_PAIR(1));
-                break;
+
             default:
                 break;
             }
@@ -118,9 +137,12 @@ void User::gameLoop(int client_socket)
                 hitsOnSelf++;
                 if (hitsOnSelf == MAX_HITS)
                 {
-                    move(25, 5);
-                    printw("Enemy Won!!!!\n");
-                    refresh();
+                    endwin(); // Finishes graphics
+                    cout << "Enemy won!\n";
+                    close(client_socket);
+                    free(received_msg);
+                    gameIsRunning = false;
+                    exit(1);
                 }
             }
             isMyTurn = true;
@@ -272,12 +294,11 @@ void User::printClientIP(struct sockaddr_in their_address)
 char User::handleAttack(coordinates attack_coords, int client_socket, Gameboard board)
 {
     move(25, 5);
-    string print_msg = "Attack recieved: x = " + to_string(attack_coords.x) + ", y = " + to_string(attack_coords.y);
+    string print_msg = "Attack recieved: x = " + to_string(attack_coords.x) + ", y = " + to_string(attack_coords.y) + "\n";
     printw(print_msg.c_str());
     char result;
     if (board.boardArray[attack_coords.y][attack_coords.x] != 'w')
     {
-        printw("\nHit!");
         result = 'h';
         attron(COLOR_PAIR(4));
         move(3 + attack_coords.y + 6, 8 + (4 * attack_coords.x));
@@ -288,7 +309,6 @@ char User::handleAttack(coordinates attack_coords, int client_socket, Gameboard 
     }
     else
     {
-        printw("\nMiss!");
         result = 'm';
         attron(COLOR_PAIR(3));
         move(3 + attack_coords.y + 6, 8 + (4 * attack_coords.x));
