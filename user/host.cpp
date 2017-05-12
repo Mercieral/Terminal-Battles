@@ -57,7 +57,7 @@ void Host::connect() {
             refresh();
             const char *msg = "Connection accepted by host\n";
             send(client_socket, msg, strlen(msg), 0);
-            this->gameLoop();
+            this->gameLoop(client_socket);
         } else {
             close(client_socket);
             printw("Connection was rejected, closing client socket\n");

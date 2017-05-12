@@ -1,4 +1,11 @@
-CFLAGS= -g -Wall -Werror
+UNAME = $(shell uname)
+D = Darwin
+$(info UNAME is $(UNAME))
+ifeq ($(UNAME),$(D))
+CFLAGS = -g -Wall -Werror
+else
+CFLAGS= -g -Wall -Werror -std=c++11
+endif
 
 all: build_object_files build_executable remove_object_files
 
@@ -19,4 +26,4 @@ remove_object_files:
 	rm -f *.o
 
 clean:
-	rm -f *.o battleship
+	rm -f *.o battleship client

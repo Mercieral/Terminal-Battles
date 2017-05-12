@@ -12,6 +12,7 @@
 #include "../game/game_board.hpp"
 
 #define PORT 8888
+#define MAX_HITS 17
 
 using namespace std;
 
@@ -30,7 +31,7 @@ public:
 
     void printClientIP(struct sockaddr_in their_address);
 
-    void gameLoop();
+    void gameLoop(int client_socket);
 
     void displayBoard(Gameboard board);
 
@@ -45,6 +46,8 @@ protected:
     bool isHost;
 
     User(bool isHost) : isHost(isHost) {}
+
+    char handleAttack(coordinates attack_coords, int client_socket, Gameboard board);
 };
 
 /**

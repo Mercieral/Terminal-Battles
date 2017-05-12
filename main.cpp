@@ -1,4 +1,5 @@
 #include "user/user.hpp"
+#include <signal.h>
 
 using namespace std;
 
@@ -11,10 +12,19 @@ int main(int argc, char **argv) {
 
     printf("\e[8;30;101t");
     initscr();
+    start_color();
+
+    init_color(COLOR_CYAN, 250,250,250);
+    init_color(COLOR_BLACK, 0, 0, 0);
+
+    init_pair(1, COLOR_WHITE, COLOR_BLACK);
+    init_pair(2, COLOR_WHITE, COLOR_CYAN);
+    init_pair(3, COLOR_WHITE, COLOR_BLUE);
+    init_pair(4, COLOR_BLACK, COLOR_RED);
     resizeterm(30, 101);
     noecho();
     refresh();
-
+    attron(COLOR_PAIR(1));
     keypad(stdscr, TRUE);
     printw(
             " ______     ______     ______   ______   __         ______     ______     __  __     __     ______  \n"

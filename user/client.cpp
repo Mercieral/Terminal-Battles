@@ -45,7 +45,7 @@ void Client::connect() {
         printw(received_msg);
         refresh();
         free(received_msg);
-        this->gameLoop();
+        this->gameLoop(client_socket);
     }
 }
 
