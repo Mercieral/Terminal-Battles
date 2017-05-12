@@ -2,14 +2,15 @@
 
 void User::gameLoop(int client_socket) {
     char *received_msg = (char *) malloc(1024);
-    const char *msg = "Your Turn\n";
+    //const char *msg = "Your Turn\n";
     bool gameIsRunning = true;
     bool isMyTurn = true;
 
     Gameboard myBoard = Gameboard(isHost);
     displayBoard(myBoard);
-    int x_pos = 0;
-    int y_pos = 0;
+    coordinates grid_pos;
+    grid_pos.x = 0;
+    grid_pos.y = 0;
 
     if (!isHost) {
       refresh();
@@ -24,28 +25,28 @@ void User::gameLoop(int client_socket) {
             case 'a':
                 if (cursor.x > 57) {
                   cursor.x -= 4;
-                  x_pos--;
+                  grid_pos.x--;
                 }
                 break;
             case KEY_RIGHT:
             case 'd':
                 if (cursor.x < 91) {
                   cursor.x += 4;
-                  x_pos++;
+                  grid_pos.x++;
                 }
                 break;
             case KEY_UP:
             case 'w':
                 if (cursor.y > 9) {
                   cursor.y -= 1;
-                  y_pos--;
+                  grid_pos.y--;
                 }
                 break;
             case KEY_DOWN:
             case 's':
                 if (cursor.y < 18) {
                   cursor.y += 1;
-                  y_pos++;
+                  grid_pos.y++;
                 }
                 break;
             case 'q':
@@ -58,7 +59,7 @@ void User::gameLoop(int client_socket) {
             case 10:
                 //do something
                 isMyTurn = false;
-                send(client_socket, msg, strlen(msg), 0);
+                send(client_socket, &grid_pos, sizeof(grid_pos), 0);
                 break;
             default:
                 break;
@@ -70,11 +71,13 @@ void User::gameLoop(int client_socket) {
         move(25, 5);
         printw("It is not your turn, wait for your opponent to take his turn");
         refresh();
-        if (recv(client_socket, received_msg, 1024, 0) == -1) {
+        coordinates attack_coords;
+        if (recv(client_socket, &attack_coords, sizeof(attack_coords), MSG_WAITALL) == -1) {
           //handle error
         }
         move(25, 5);
-        printw(received_msg);
+        string print_msg = "Attack recieved: x = " + to_string(attack_coords.x) + ", y = " + to_string(attack_coords.y);
+        printw(print_msg.c_str());
         isMyTurn = true;
         move(cursor.y, cursor.x);
         refresh();
