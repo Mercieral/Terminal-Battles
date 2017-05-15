@@ -1,5 +1,8 @@
 #include "user.hpp"
 
+std::queue<string> enemyQueue;
+std::queue<string> myQueue;
+
 void User::gameLoop(int client_socket)
 {
     char *received_msg = (char *)malloc(1024);
@@ -92,14 +95,15 @@ void User::gameLoop(int client_socket)
                     {
                         hitsOnEnemy++;
                         int b = beep();
-                        if(b == ERR){
-                          move(25, 52);
+                        if(b != OK){
+                          move(23, 52);
                           printw("Did not beep\n");
                           refresh();
                         }
                         if (hitsOnEnemy == MAX_HITS)
                         {
                             endwin(); // Finishes graphics
+                            messageLog("You won!", false); // TODO
                             cout << "You won!\n";
                             close(client_socket);
                             free(received_msg);
@@ -119,6 +123,7 @@ void User::gameLoop(int client_socket)
                     move(cursor.y, cursor.x);
                     addch(answer);
                     attron(COLOR_PAIR(1));
+                    messageLog(answer + "", false);
                     break;
                 }
 
@@ -145,6 +150,7 @@ void User::gameLoop(int client_socket)
                 hitsOnSelf++;
                 if (hitsOnSelf == MAX_HITS)
                 {
+                    messageLog("Enemy won!", true); // TODO
                     endwin(); // Finishes graphics
                     cout << "Enemy won!\n";
                     close(client_socket);
@@ -312,13 +318,16 @@ void User::printClientIP(struct sockaddr_in their_address)
 char User::handleAttack(coordinates attack_coords, int client_socket, Gameboard board)
 {
     move(23, 52);
-    string print_msg = "Attack recieved: x = " + to_string(attack_coords.x) + ", y = " + to_string(attack_coords.y) + "                   ";
+    string print_msg = "Attack recieved: x = " +
+      to_string(attack_coords.x) + ", y = " +
+      to_string(attack_coords.y) + "                   ";
     printw(print_msg.c_str());
     move(24, 52);
     char result;
     if (board.boardArray[attack_coords.y][attack_coords.x] != 'w')
     {
         result = 'h';
+        messageLog("", true);
         attron(COLOR_PAIR(4));
         move(3 + attack_coords.y + 6, 8 + (4 * attack_coords.x));
         addch('X');
@@ -329,6 +338,7 @@ char User::handleAttack(coordinates attack_coords, int client_socket, Gameboard 
     else
     {
         result = 'm';
+        messageLog("", true);
         attron(COLOR_PAIR(3));
         move(3 + attack_coords.y + 6, 8 + (4 * attack_coords.x));
         addch('X');
@@ -336,4 +346,20 @@ char User::handleAttack(coordinates attack_coords, int client_socket, Gameboard 
         send(client_socket, &result, sizeof(char), 0);
         return result;
     }
+}
+
+
+void User::messageLog(string message, bool enemy)
+{
+  if(enemy) {
+    if (enemyQueue.size() == 5) {
+      enemyQueue.pop();
+    }
+    enemyQueue.push(message);
+  } else {
+    if (myQueue.size() == 5) {
+      myQueue.pop();
+    }
+    enemyQueue.push(message);
+  }
 }
