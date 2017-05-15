@@ -4,39 +4,36 @@
 using namespace std;
 
 void setupWindow();
+void connectToServer(string type);
+void getHosts();
 char startMenu();
-void signal_handler(int sig)
-{
+unsigned long resolveName(const char *name);
+void signal_handler(int sig) {
 	endwin();
 	exit(0);
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
 	setupWindow();
 	char ret = 'e';
-	while (ret != 'h' && ret != 'c')
-	{
-		for (int i = 8; i < 30; i++)
-		{
+	while (ret != 'h' && ret != 'c') {
+		for (int i = 8; i < 30; i++) {
 			mvprintw(i, 0, "\n");
 		}
 		refresh();
 		ret = startMenu();
-		if (ret == 'h')
-		{
+		if (ret == 'h') {
+			connectToServer("host,bleheheheh");
 			Host host = Host();
-			for (int i = 8; i < 30; i++)
-			{
+			for (int i = 8; i < 30; i++) {
 				mvprintw(i, 0, "\n");
 			}
 			refresh();
 			host.connect();
 		}
-		else if (ret == 'c')
-		{
-			for (int i = 8; i < 30; i++)
-			{
+		else if (ret == 'c') {
+			connectToServer("client");
+			for (int i = 8; i < 30; i++) {
 				mvprintw(i, 0, "\n");
 			}
 			mvprintw(8, 2, "Enter the hostname or IP of the host: ");
@@ -44,12 +41,10 @@ int main(int argc, char **argv)
 			echo();
 			getnstr(str, 100);
 			noecho();
-			if (strcmp(str, "") == 0)
-			{
+			if (strcmp(str, "") == 0) {
 				ret = 'e';
 			}
-			else
-			{
+			else {
 				Client client = Client(str);
 				refresh();
 				client.connect();
@@ -61,8 +56,24 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-void setupWindow()
-{
+void connectToServer(string type) {
+	struct sockaddr_in server_address;
+	unsigned short serverPort = 5000;
+	int client_socket = socket(PF_INET, SOCK_STREAM, 0);
+	const char * msg = type.c_str();
+	memset(&server_address, 0, sizeof(server_address));
+	server_address.sin_family = AF_INET;
+	server_address.sin_addr.s_addr = resolveName("localhost");
+	server_address.sin_port = htons(serverPort);
+	connect(client_socket, (const struct sockaddr *)&server_address, sizeof(server_address));
+	send(client_socket, msg, strlen(msg), 0);
+}
+
+void getHosts() {
+
+}
+
+void setupWindow() {
 	printf("\e[8;30;101t");
 	initscr();
 	start_color();
@@ -92,8 +103,7 @@ void setupWindow()
 	signal(SIGINT, signal_handler);
 }
 
-char startMenu()
-{
+char startMenu() {
 	attron(A_UNDERLINE);
 	move(8, 2);
 	printw("How do you want to start?");
@@ -101,8 +111,7 @@ char startMenu()
 	string options[3] = {"- Run as a new host", "- Connect to a waiting host", "- exit"};
 	int i = 0;
 	move(10, 4);
-	for (i = 0; i < 3; i++)
-	{
+	for (i = 0; i < 3; i++) {
 		move(10 + i, 4);
 		if (i == 0)
 			attron(A_STANDOUT); // highlights the first item.
@@ -116,38 +125,35 @@ char startMenu()
 	bool isActiveMenu = true;
 	int prev = 0;
 	char ret = 'e';
-	while (isActiveMenu)
-	{
+	while (isActiveMenu) {
 		prev = i;
 		// use a variable to increment or decrement the value based on the input.
-		switch (getch())
-		{
-		case KEY_UP:
-			i--;
-			i = (i < 0) ? 2 : i;
-			break;
-		case KEY_DOWN:
-			i++;
-			i = (i > 2) ? 0 : i;
-			break;
-		case 10:
-			switch (i)
-			{
-			case 0:
-				mvprintw(14, 2, "selected host\n");
-				ret = 'h';
-				isActiveMenu = false;
+		switch (getch()) {
+			case KEY_UP:
+				i--;
+				i = (i < 0) ? 2 : i;
 				break;
-			case 1:
-				mvprintw(14, 2, "selected client\n");
-				ret = 'c';
-				isActiveMenu = false;
+			case KEY_DOWN:
+				i++;
+				i = (i > 2) ? 0 : i;
 				break;
-			case 2:
-				endwin(); // Finishes graphics
-				cout << "Ending game due to a player quiting\n";
-				exit(1);
-			}
+			case 10:
+				switch (i) {
+					case 0:
+						mvprintw(14, 2, "selected host\n");
+						ret = 'h';
+						isActiveMenu = false;
+						break;
+					case 1:
+						mvprintw(14, 2, "selected client\n");
+						ret = 'c';
+						isActiveMenu = false;
+						break;
+					case 2:
+						endwin(); // Finishes graphics
+						cout << "Ending game due to a player quiting\n";
+						exit(1);
+				}
 		}
 		// now highlight the next item in the list.
 		attroff(A_STANDOUT);
@@ -158,4 +164,15 @@ char startMenu()
 	}
 	curs_set(2);
 	return ret;
+}
+
+//Handles creating host name for a client to connect to a server
+unsigned long resolveName(const char *name) {
+	struct hostent *host;
+	if ((host = gethostbyname(name)) == NULL) {
+		endwin();
+		perror("getHostByName() failed");
+		exit(1);
+	}
+	return *((unsigned long *)host->h_addr_list[0]);
 }
