@@ -28,13 +28,24 @@ int main(int argc, char **argv) {
         refresh();
         ret = startMenu();
         if (ret == 'h') {
-            connectToServer("host;bleheheheh");
-            Host host = Host();
             for (int i = 8; i < 30; i++) {
                 mvprintw(i, 0, "\n");
             }
             refresh();
-            host.connect();
+            mvprintw(8, 2, "Enter a host (display) name: ");
+            char *str = (char *) malloc(100);
+            echo();
+            getnstr(str, 100);
+            noecho();
+            if (strcmp(str, "") == 0) {
+                ret = 'e';
+            } else {
+//                char *strToSend = (char *) malloc(106);
+//                strToSend = (char *) "host,";
+                connectToServer("host,bleheheh");
+                Host host = Host();
+                host.connect();
+            }
         } else if (ret == 'c') {
             int socket = connectToServer("client");
             //connectToServer("client");
@@ -91,6 +102,7 @@ void setupWindow() {
     init_pair(2, COLOR_WHITE, COLOR_CYAN);
     init_pair(3, COLOR_WHITE, COLOR_BLUE);
     init_pair(4, COLOR_BLACK, COLOR_RED);
+    init_pair(5, COLOR_BLACK, COLOR_YELLOW);
     resizeterm(30, 101);
     noecho();
     refresh();

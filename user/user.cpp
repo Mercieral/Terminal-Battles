@@ -1,5 +1,15 @@
 #include "user.hpp"
 
+std::queue<string> logQueue;
+
+string X_COLUMN[10] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"};
+
+int aircraft_count = 5;
+int battleship_count = 4;
+int submarine_count = 3;
+int destroyer_count = 3;
+int patrol_count = 2;
+
 void User::gameLoop(int client_socket)
 {
     char *received_msg = (char *)malloc(1024);
@@ -73,9 +83,11 @@ void User::gameLoop(int client_socket)
                 c = inch() & A_CHARTEXT;
                 if (c == 'h' || c == 'm')
                 {
-                    move(23, 52);
-                    printw("You already attacked there! Try again             ");
-                    move(24, 52);
+                    move(20, 52);
+                    attron(COLOR_PAIR(5));
+                    printw("    You already attacked there! Try again       ");
+                    attron(COLOR_PAIR(1));
+                    move(22, 52);
                     refresh();
                     break;
                 }
@@ -87,15 +99,39 @@ void User::gameLoop(int client_socket)
                     isMyTurn = false;
                     send(client_socket, &grid_pos, sizeof(grid_pos), 0);
                     char answer;
+                    string answer_str;
+                    string enemyShipStatus = "";
                     recv(client_socket, &answer, sizeof(char), MSG_WAITALL);
-                    if (answer == 'h')
+                    if (answer == 'h' || answer == 'a' || answer == 'b'
+                        || answer == 's' || answer == 'd' || answer == 'p')
                     {
+                        answer_str = "Hit";
                         hitsOnEnemy++;
-                        int b = beep();
-                        if(b == ERR){
-                          move(25, 52);
-                          printw("Did not beep\n");
-                          refresh();
+                        beep();
+                        // int b = beep();
+                        // if(b != OK){
+                        //   move(23, 52);
+                        //   printw("Did not beep\n");
+                        //   refresh();
+                        // }
+                        if (answer != 'h') {
+                            switch (answer) {
+                                case 'a':
+                                    enemyShipStatus = "Enemy Aircraft carrier sunk!" ;
+                                    break;
+                                case 'b':
+                                    enemyShipStatus = "Enemy Battleship sunk!";
+                                    break;
+                                case 's':
+                                    enemyShipStatus = "Enemy Submarine sunk!";
+                                    break;
+                                case 'd':
+                                    enemyShipStatus = "Enemy Destroyer sunk!";
+                                    break;
+                                case 'p':
+                                    enemyShipStatus = "Enemy Patrol boat sunk!";
+                                    break;
+                            }
                         }
                         if (hitsOnEnemy == MAX_HITS)
                         {
@@ -110,6 +146,7 @@ void User::gameLoop(int client_socket)
                     }
                     else if (answer == 'm')
                     {
+                        answer_str = "Miss";
                         attron(COLOR_PAIR(3));
                     }
                     move(cursor.y, cursor.x - 1);
@@ -119,6 +156,12 @@ void User::gameLoop(int client_socket)
                     move(cursor.y, cursor.x);
                     addch(answer);
                     attron(COLOR_PAIR(1));
+                    messageLog("You attacked: " + X_COLUMN[grid_pos.x] +
+                        "" + to_string(grid_pos.y+1) + " = " +
+                        answer_str);
+                    if (enemyShipStatus != "")  {
+                        messageLog(enemyShipStatus);
+                    }
                     break;
                 }
 
@@ -130,15 +173,19 @@ void User::gameLoop(int client_socket)
         } //Take Your Turn
         else
         {
-            move(23, 52);
-            printw("Waiting for enemy...                    ");
-            move(24, 52);
+            move(20, 52);
+            attron(COLOR_PAIR(5));
+            printw("              Waiting for enemy                 ");
+            attron(COLOR_PAIR(1));
+            move(22, 52);
             refresh();
             coordinates attack_coords;
             if (recv(client_socket, &attack_coords, sizeof(attack_coords), MSG_WAITALL) == -1)
             {
                 //handle error
             }
+            move(20, 52);
+            printw("\n");
             char result = handleAttack(attack_coords, client_socket, myBoard);
             if (result == 'h')
             {
@@ -157,83 +204,6 @@ void User::gameLoop(int client_socket)
             move(cursor.y, cursor.x);
             refresh();
         } //Wait For Your Turn
-
-        // ******** OLD CLIENT GAME LOOP ********
-        // refresh();
-
-        // move(15, 0);
-        // printw("\n");
-        // move(15, 0);
-        // printw("Send message to host: ");
-
-        // char *str = (char *)malloc(1024);
-        // getstr(str);
-        // move(15, 0);
-        // printw("Waiting for message from host...\n");
-        // refresh();
-        // string user_input = str;
-        // user_input = user_input + "\n";
-        // send(client_socket, user_input.c_str(), user_input.length() + 1, 0);
-        // free(str);
-
-        // //receive
-        // int len = recv(client_socket, received_msg, 1024, 0);
-        // printw("\n");
-        // if (len < 0)
-        // {
-        // 	cout << "Error receiving msg. Error = " << strerror(errno) << "\n";
-        // 	gameIsRunning = false;
-        // 	break;
-        // }
-        // else if (len == 0)
-        // {
-        // 	cout << "Connection terminated, exiting\n";
-        // 	gameIsRunning = false;
-        // 	break;
-        // }
-        // else
-        // {
-        // 	move(16, 0);
-        // 	printw(received_msg);
-        // }
-
-        // ******** OLD HOST GAME LOOP PRINTING ********
-        // refresh();
-        // int len = recv(client_socket, received_msg, 1024, 0);
-        // if (len < 0)
-        // {
-        // 	cout << "Error receiving msg. Error = " << strerror(errno) << "\n";
-        // 	gameIsRunning = false;
-        // 	break;
-        // }
-        // else if (len == 0)
-        // {
-        // 	cout << "Connection terminated, exiting\n";
-        // 	gameIsRunning = false;
-        // 	break;
-        // }
-        // else
-        // {
-        // 	move(16, 0);
-        // 	printw(received_msg);
-        // }
-
-        // move(15, 0);
-        // printw("\n");
-        // move(15, 0);
-        // printw("Send message to client: ");
-
-        // char *str = (char *)malloc(1024);
-        // getstr(str);
-        // cursor.y = 15;
-        // cursor.x = 0;
-        // move(15, 0);
-        // printw("Waiting for message from client...\n");
-        // refresh();
-        // string user_input = str;
-        // user_input = user_input + "\n";
-        // send(client_socket, user_input.c_str(), user_input.length() + 1, 0);
-        // free(str);
     }
 }
 
@@ -312,28 +282,96 @@ void User::printClientIP(struct sockaddr_in their_address)
 char User::handleAttack(coordinates attack_coords, int client_socket, Gameboard board)
 {
     move(23, 52);
-    string print_msg = "Attack recieved: x = " + to_string(attack_coords.x) + ", y = " + to_string(attack_coords.y) + "                   ";
-    printw(print_msg.c_str());
+
+    string print_msg = "Enemy attack recieved: " +
+      X_COLUMN[attack_coords.x] + "" +
+      to_string(attack_coords.y + 1) + " = ";
+    // printw(print_msg.c_str());
     move(24, 52);
     char result;
-    if (board.boardArray[attack_coords.y][attack_coords.x] != 'w')
+    string result_str;
+    string attackStatus = "";
+    char boardPiece = board.boardArray[attack_coords.y][attack_coords.x];
+    if (boardPiece != 'w')
     {
         result = 'h';
+        switch(boardPiece){
+            case 'a':
+                aircraft_count--;
+                if (aircraft_count == 0){
+                    result = 'a';
+                    attackStatus = "Your Aircraft carrier sunk!";
+                }
+                break;
+            case 'b':
+                battleship_count--;
+                if (battleship_count == 0){
+                    result = 'b';
+                    attackStatus = "Your Battleship sunk!";
+                }
+                break;
+            case 's':
+                submarine_count--;
+                if (submarine_count == 0){
+                    result = 's';
+                    attackStatus = "Your Submarine sunk!";
+                }
+                break;
+            case 'd':
+                destroyer_count--;
+                if (destroyer_count == 0){
+                    result = 'd';
+                    attackStatus = "Your Destroyer sunk!";
+                }
+                break;
+            case 'p':
+                patrol_count--;
+                if (patrol_count == 0){
+                    result = 'p';
+                    attackStatus = "Your Patrol boat sunk!";
+                }
+                break;
+        }
+        result_str = "Hit";
         attron(COLOR_PAIR(4));
         move(3 + attack_coords.y + 6, 8 + (4 * attack_coords.x));
         addch('X');
         attron(COLOR_PAIR(1));
         send(client_socket, &result, sizeof(char), 0);
-        return result;
+        // return result;
     }
     else
     {
         result = 'm';
+        result_str = "Miss";
         attron(COLOR_PAIR(3));
         move(3 + attack_coords.y + 6, 8 + (4 * attack_coords.x));
         addch('X');
         attron(COLOR_PAIR(1));
         send(client_socket, &result, sizeof(char), 0);
-        return result;
+    }
+    messageLog(print_msg + result_str);
+    if(attackStatus != "") {
+        messageLog(attackStatus);
+    }
+    return result;
+}
+
+
+void User::messageLog(string message)
+{
+    if (logQueue.size() == 5) {
+      logQueue.pop();
+    }
+    logQueue.push(message);
+
+    int i = 0;
+    for (i = 0; i <  (int)logQueue.size(); i++) {
+        move(27 - i + ((int) logQueue.size()) - 5, 52);
+        string currentMessage = logQueue.front();
+        logQueue.pop();
+        printw((currentMessage + "\n").c_str());
+        refresh();
+        logQueue.push(currentMessage);
     }
 }
