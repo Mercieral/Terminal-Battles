@@ -143,6 +143,7 @@ void User::gameLoop(int client_socket)
                             exit(1);
                         }
                         attron(COLOR_PAIR(4));
+                        answer = 'h';
                     }
                     else if (answer == 'm')
                     {
@@ -187,7 +188,7 @@ void User::gameLoop(int client_socket)
             move(20, 52);
             printw("\n");
             char result = handleAttack(attack_coords, client_socket, myBoard);
-            if (result == 'h')
+            if (result != 'm')
             {
                 hitsOnSelf++;
                 if (hitsOnSelf == MAX_HITS)
