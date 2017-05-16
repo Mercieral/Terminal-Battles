@@ -47,39 +47,18 @@ TODO
 
 Refer to issues on the project, but some intial issues we had are as follows:
 
-#### Coloring on other operating systems
-
-TODO - Aaron, upload image of your screen
-
 #### NCurses display issues
 
 Occasionally the screen will have trouble displaying characters correctly at the right place or showing all the characters. To solve this issue, close the exectuable and re-run the application. If this does now solve the problem, rebuild the application or refer to [Screen size issue](#screen-size-adjusting)
 
+#### Coloring on other operating systems
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+TODO - Aaron, upload image of your screen
 
 #### Screen size adjusting
+
+Issue found on Darwn is screen sizing. Occassionally the terminal would not adjust the terminal size to the size determined at the beginning of the program. To solve this issue, either restart the program or adjust the screen size to be about a quarter of the screen. 
+
+While the program is running, the screen should not be adjusted. If the screen is adjusted, the text will potentially lose formatting. Avoid adjusting the screen while playing the game. 
+
+Currently, the application has not been tested over SSH. There is potential there will be problems. 
