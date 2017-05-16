@@ -1,5 +1,12 @@
 #include "user.hpp"
 
+std::queue<string> logQueue;
+
+string X_COLUMN[10] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"};
+
+int enemy_offset = 0;
+int my_offset = 0;
+
 void User::gameLoop(int client_socket)
 {
     char *received_msg = (char *)malloc(1024);
@@ -73,9 +80,11 @@ void User::gameLoop(int client_socket)
                 c = inch() & A_CHARTEXT;
                 if (c == 'h' || c == 'm')
                 {
-                    move(23, 52);
-                    printw("You already attacked there! Try again             ");
-                    move(24, 52);
+                    move(20, 52);
+                    attron(COLOR_PAIR(5));
+                    printw("    You already attacked there! Try again       ");
+                    attron(COLOR_PAIR(1));
+                    move(22, 52);
                     refresh();
                     break;
                 }
@@ -87,13 +96,15 @@ void User::gameLoop(int client_socket)
                     isMyTurn = false;
                     send(client_socket, &grid_pos, sizeof(grid_pos), 0);
                     char answer;
+                    string answer_str;
                     recv(client_socket, &answer, sizeof(char), MSG_WAITALL);
                     if (answer == 'h')
                     {
+                        answer_str = "Hit";
                         hitsOnEnemy++;
                         int b = beep();
-                        if(b == ERR){
-                          move(25, 52);
+                        if(b != OK){
+                          move(23, 52);
                           printw("Did not beep\n");
                           refresh();
                         }
@@ -110,6 +121,7 @@ void User::gameLoop(int client_socket)
                     }
                     else if (answer == 'm')
                     {
+                        answer_str = "Miss";
                         attron(COLOR_PAIR(3));
                     }
                     move(cursor.y, cursor.x - 1);
@@ -119,6 +131,9 @@ void User::gameLoop(int client_socket)
                     move(cursor.y, cursor.x);
                     addch(answer);
                     attron(COLOR_PAIR(1));
+                    messageLog("You attacked: " + X_COLUMN[grid_pos.x] +
+                        "" + to_string(grid_pos.y+1) + " = " +
+                        answer_str, false);
                     break;
                 }
 
@@ -130,15 +145,19 @@ void User::gameLoop(int client_socket)
         } //Take Your Turn
         else
         {
-            move(23, 52);
-            printw("Waiting for enemy...                    ");
-            move(24, 52);
+            move(20, 52);
+            attron(COLOR_PAIR(5));
+            printw("              Waiting for enemy                 ");
+            attron(COLOR_PAIR(1));
+            move(22, 52);
             refresh();
             coordinates attack_coords;
             if (recv(client_socket, &attack_coords, sizeof(attack_coords), MSG_WAITALL) == -1)
             {
                 //handle error
             }
+            move(20, 52);
+            printw("\n");
             char result = handleAttack(attack_coords, client_socket, myBoard);
             if (result == 'h')
             {
@@ -312,28 +331,54 @@ void User::printClientIP(struct sockaddr_in their_address)
 char User::handleAttack(coordinates attack_coords, int client_socket, Gameboard board)
 {
     move(23, 52);
-    string print_msg = "Attack recieved: x = " + to_string(attack_coords.x) + ", y = " + to_string(attack_coords.y) + "                   ";
-    printw(print_msg.c_str());
+
+    string print_msg = "Enemy attack recieved: " +
+      X_COLUMN[attack_coords.x] + "" +
+      to_string(attack_coords.y + 1) + " = ";
+    // printw(print_msg.c_str());
     move(24, 52);
     char result;
+    string result_str;
     if (board.boardArray[attack_coords.y][attack_coords.x] != 'w')
     {
         result = 'h';
+        result_str = "Hit";
         attron(COLOR_PAIR(4));
         move(3 + attack_coords.y + 6, 8 + (4 * attack_coords.x));
         addch('X');
         attron(COLOR_PAIR(1));
         send(client_socket, &result, sizeof(char), 0);
-        return result;
+        // return result;
     }
     else
     {
         result = 'm';
+        result_str = "Miss";
         attron(COLOR_PAIR(3));
         move(3 + attack_coords.y + 6, 8 + (4 * attack_coords.x));
         addch('X');
         attron(COLOR_PAIR(1));
         send(client_socket, &result, sizeof(char), 0);
-        return result;
+    }
+    messageLog(print_msg + result_str, true);
+    return result;
+}
+
+
+void User::messageLog(string message, bool enemy)
+{
+    if (logQueue.size() == 5) {
+      logQueue.pop();
+    }
+    logQueue.push(message);
+
+    int i = 0;
+    for (i = 0; i <  (int)logQueue.size(); i++) {
+        move(23 + i, 52);
+        string currentMessage = logQueue.front();
+        logQueue.pop();
+        printw((currentMessage + "\n").c_str());
+        refresh();
+        logQueue.push(currentMessage);
     }
 }
