@@ -4,8 +4,11 @@ std::queue<string> logQueue;
 
 string X_COLUMN[10] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"};
 
-int enemy_offset = 0;
-int my_offset = 0;
+int aircraft_count = 5;
+int battleship_count = 4;
+int submarine_count = 3;
+int destroyer_count = 3;
+int patrol_count = 2;
 
 void User::gameLoop(int client_socket)
 {
