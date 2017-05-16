@@ -50,7 +50,7 @@ protected:
 
     char handleAttack(coordinates attack_coords, int client_socket, Gameboard board);
 
-    void messageLog(string message, bool enemy);
+    void messageLog(string message);
 };
 
 /**

@@ -100,16 +100,38 @@ void User::gameLoop(int client_socket)
                     send(client_socket, &grid_pos, sizeof(grid_pos), 0);
                     char answer;
                     string answer_str;
+                    string enemyShipStatus = "";
                     recv(client_socket, &answer, sizeof(char), MSG_WAITALL);
-                    if (answer == 'h')
+                    if (answer == 'h' || answer == 'a' || answer == 'b'
+                        || answer == 's' || answer == 'd' || answer == 'p')
                     {
                         answer_str = "Hit";
                         hitsOnEnemy++;
-                        int b = beep();
-                        if(b != OK){
-                          move(23, 52);
-                          printw("Did not beep\n");
-                          refresh();
+                        beep();
+                        // int b = beep();
+                        // if(b != OK){
+                        //   move(23, 52);
+                        //   printw("Did not beep\n");
+                        //   refresh();
+                        // }
+                        if (answer != 'h') {
+                            switch (answer) {
+                                case 'a':
+                                    enemyShipStatus = "Enemy Aircraft carrier sunk!" ;
+                                    break;
+                                case 'b':
+                                    enemyShipStatus = "Enemy Battleship sunk!";
+                                    break;
+                                case 's':
+                                    enemyShipStatus = "Enemy Submarine sunk!";
+                                    break;
+                                case 'd':
+                                    enemyShipStatus = "Enemy Destroyer sunk!";
+                                    break;
+                                case 'p':
+                                    enemyShipStatus = "Enemy Patrol boat sunk!";
+                                    break;
+                            }
                         }
                         if (hitsOnEnemy == MAX_HITS)
                         {
@@ -136,7 +158,10 @@ void User::gameLoop(int client_socket)
                     attron(COLOR_PAIR(1));
                     messageLog("You attacked: " + X_COLUMN[grid_pos.x] +
                         "" + to_string(grid_pos.y+1) + " = " +
-                        answer_str, false);
+                        answer_str);
+                    if (enemyShipStatus != "")  {
+                        messageLog(enemyShipStatus);
+                    }
                     break;
                 }
 
@@ -265,9 +290,48 @@ char User::handleAttack(coordinates attack_coords, int client_socket, Gameboard 
     move(24, 52);
     char result;
     string result_str;
-    if (board.boardArray[attack_coords.y][attack_coords.x] != 'w')
+    string attackStatus = "";
+    char boardPiece = board.boardArray[attack_coords.y][attack_coords.x];
+    if (boardPiece != 'w')
     {
         result = 'h';
+        switch(boardPiece){
+            case 'a':
+                aircraft_count--;
+                if (aircraft_count == 0){
+                    result = 'a';
+                    attackStatus = "Your Aircraft carrier sunk!";
+                }
+                break;
+            case 'b':
+                battleship_count--;
+                if (battleship_count == 0){
+                    result = 'b';
+                    attackStatus = "Your Battleship sunk!";
+                }
+                break;
+            case 's':
+                submarine_count--;
+                if (submarine_count == 0){
+                    result = 's';
+                    attackStatus = "Your Submarine sunk!";
+                }
+                break;
+            case 'd':
+                destroyer_count--;
+                if (destroyer_count == 0){
+                    result = 'd';
+                    attackStatus = "Your Destroyer sunk!";
+                }
+                break;
+            case 'p':
+                patrol_count--;
+                if (patrol_count == 0){
+                    result = 'p';
+                    attackStatus = "Your Patrol boat sunk!";
+                }
+                break;
+        }
         result_str = "Hit";
         attron(COLOR_PAIR(4));
         move(3 + attack_coords.y + 6, 8 + (4 * attack_coords.x));
@@ -286,12 +350,15 @@ char User::handleAttack(coordinates attack_coords, int client_socket, Gameboard 
         attron(COLOR_PAIR(1));
         send(client_socket, &result, sizeof(char), 0);
     }
-    messageLog(print_msg + result_str, true);
+    messageLog(print_msg + result_str);
+    if(attackStatus != "") {
+        messageLog(attackStatus);
+    }
     return result;
 }
 
 
-void User::messageLog(string message, bool enemy)
+void User::messageLog(string message)
 {
     if (logQueue.size() == 5) {
       logQueue.pop();
@@ -300,7 +367,7 @@ void User::messageLog(string message, bool enemy)
 
     int i = 0;
     for (i = 0; i <  (int)logQueue.size(); i++) {
-        move(23 + i, 52);
+        move(27 - i + ((int) logQueue.size()) - 5, 52);
         string currentMessage = logQueue.front();
         logQueue.pop();
         printw((currentMessage + "\n").c_str());
