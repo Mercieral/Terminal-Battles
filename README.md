@@ -78,12 +78,12 @@ TODO
 Refer to [Issues](https://github.com/Mercieral/Terminal-Battles/issues) on the project, but some intial issues we had are as follows:
 
 #### NCurses display issues 
-Issue: Mercieral/Terminal-Battles#5
+[comment]: <> (Issue: Mercieral/Terminal-Battles#5)
 
 Occasionally the screen will have trouble displaying characters correctly at the right place or showing all the characters. To solve this issue, close the exectuable and re-run the application. If this does now solve the problem, rebuild the application or refer to [Screen size issue](#screen-size-adjusting)
 
 #### Coloring on other operating systems 
-Issue: Mercieral/Terminal-Battles#6
+[comment]: <> (Issue: Mercieral/Terminal-Battles#6)
 
 TODO - Aaron, upload image of your screen
 
@@ -96,12 +96,12 @@ Depending on the terminal and operating system, the changing of the color is not
 TODO
 
 #### Beep on Certain Operating System 
-Issue: Mercieral/Terminal-Battles#7
+[comment]: <> (Issue: Mercieral/Terminal-Battles#7)
 
 TODO
 
 #### Screen size adjusting 
-Issue: Mercieral/Terminal-Battles#8
+[comment]: <> (Issue: Mercieral/Terminal-Battles#8)
 
 Issue found on Darwn is screen sizing. Occassionally the terminal would not adjust the terminal size to the size determined at the beginning of the program. To solve this issue, either restart the program or adjust the screen size to be about a quarter of the screen. 
 
