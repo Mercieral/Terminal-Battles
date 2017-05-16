@@ -188,7 +188,7 @@ void User::gameLoop(int client_socket)
             move(20, 52);
             printw("\n");
             char result = handleAttack(attack_coords, client_socket, myBoard);
-            if (result != 'w')
+            if (result != 'm')
             {
                 hitsOnSelf++;
                 if (hitsOnSelf == MAX_HITS)
