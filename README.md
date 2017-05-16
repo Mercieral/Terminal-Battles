@@ -69,9 +69,9 @@ TODO - Aaron, upload image of your screen
 
 As show above, the image is the coloring of a game being played on Darwin Operating System. Below is a different battleship game being played on Ubuntu 16.04 LTS.
 
-TODO - Larry, add your image
+![Image with board played on](https://raw.githubusercontent.com/Mercieral/Terminal-Battles/master/images/fuller_board.png)
 
-Depending on the terminal and operating system, the changing of the color is not enabled or there is an issues in the terminal allowing editing. 
+Depending on the terminal and operating system, the changing of the color is not enabled or there is an issues in the terminal allowing editing. The Darwin played game has cyan colored ships, as the Ubuntu 16.04 LTS has gray colored ships. The gray color was the desired color for the ship color. **Gray** was not a default color in *ncurses* so the color was set to be **gray** by adjusting the numbers of the default color, **cyan**. As in Darwin, the color comes out as the natural **cyan**. There are functions available in *ncurses* that checks if color changing is available but that result has returned **TRUE**. This is an issue that can be furthered explored. as to determine the cause.
 
 TODO
 
