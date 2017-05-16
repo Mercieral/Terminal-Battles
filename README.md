@@ -43,7 +43,21 @@ To run the game, call the command ` ./battleship `
 
 ### Playing the Game
 
+The commands to play the game are as follows:
+
+| Key combination | Details |
+| ------- | ------- |
+| w, up arrow |Move the cursor up |
+| a, left arrow | Move the cursor left |
+| s, down arrow | Move the cursor down |
+| d, right arrow | Move the cursor right |
+| q | Quit the game |
+| enter | Send attack (your turn only) |
+
+![You sunk my battleship!](https://raw.githubusercontent.com/Mercieral/Terminal-Battles/master/images/battleship_sunk.png)
+
 TODO
+
 
 ### Matchmaking Server
 
@@ -55,15 +69,17 @@ TODO
 
 ## Help
 
+TODO
+
 ## Known Bugs/Issues
 
 Refer to [Issues](https://github.com/Mercieral/Terminal-Battles/issues) on the project, but some intial issues we had are as follows:
 
-#### NCurses display issues
+#### NCurses display issues #5
 
 Occasionally the screen will have trouble displaying characters correctly at the right place or showing all the characters. To solve this issue, close the exectuable and re-run the application. If this does now solve the problem, rebuild the application or refer to [Screen size issue](#screen-size-adjusting)
 
-#### Coloring on other operating systems
+#### Coloring on other operating systems #6
 
 TODO - Aaron, upload image of your screen
 
@@ -75,11 +91,11 @@ Depending on the terminal and operating system, the changing of the color is not
 
 TODO
 
-#### Beep on Certain Operating System
+#### Beep on Certain Operating System #7
 
 TODO
 
-#### Screen size adjusting
+#### Screen size adjusting #8
 
 Issue found on Darwn is screen sizing. Occassionally the terminal would not adjust the terminal size to the size determined at the beginning of the program. To solve this issue, either restart the program or adjust the screen size to be about a quarter of the screen. 
 
