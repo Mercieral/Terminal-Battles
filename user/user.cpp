@@ -9,8 +9,23 @@ void User::gameLoop(int client_socket)
     int hitsOnEnemy = 0;
     int hitsOnSelf = 0;
 
-    Gameboard myBoard = Gameboard(isHost);
-    displayBoard(myBoard);
+    move(23, 1);
+    printw("Would you like to create your board manually? Enter: y/n\n");
+    refresh();
+
+    Gameboard myBoard = Gameboard();
+    switch (getch())
+    {
+      case 'y':
+        myBoard.generateManualBoard();
+        //displayBoard(myBoard);
+        break;
+      case 'n':
+        myBoard.generateRandomBoard(isHost);
+        displayBoard(myBoard);
+        break;
+    }
+
     coordinates grid_pos;
     grid_pos.x = 0;
     grid_pos.y = 0;
@@ -157,83 +172,6 @@ void User::gameLoop(int client_socket)
             move(cursor.y, cursor.x);
             refresh();
         } //Wait For Your Turn
-
-        // ******** OLD CLIENT GAME LOOP ********
-        // refresh();
-
-        // move(15, 0);
-        // printw("\n");
-        // move(15, 0);
-        // printw("Send message to host: ");
-
-        // char *str = (char *)malloc(1024);
-        // getstr(str);
-        // move(15, 0);
-        // printw("Waiting for message from host...\n");
-        // refresh();
-        // string user_input = str;
-        // user_input = user_input + "\n";
-        // send(client_socket, user_input.c_str(), user_input.length() + 1, 0);
-        // free(str);
-
-        // //receive
-        // int len = recv(client_socket, received_msg, 1024, 0);
-        // printw("\n");
-        // if (len < 0)
-        // {
-        // 	cout << "Error receiving msg. Error = " << strerror(errno) << "\n";
-        // 	gameIsRunning = false;
-        // 	break;
-        // }
-        // else if (len == 0)
-        // {
-        // 	cout << "Connection terminated, exiting\n";
-        // 	gameIsRunning = false;
-        // 	break;
-        // }
-        // else
-        // {
-        // 	move(16, 0);
-        // 	printw(received_msg);
-        // }
-
-        // ******** OLD HOST GAME LOOP PRINTING ********
-        // refresh();
-        // int len = recv(client_socket, received_msg, 1024, 0);
-        // if (len < 0)
-        // {
-        // 	cout << "Error receiving msg. Error = " << strerror(errno) << "\n";
-        // 	gameIsRunning = false;
-        // 	break;
-        // }
-        // else if (len == 0)
-        // {
-        // 	cout << "Connection terminated, exiting\n";
-        // 	gameIsRunning = false;
-        // 	break;
-        // }
-        // else
-        // {
-        // 	move(16, 0);
-        // 	printw(received_msg);
-        // }
-
-        // move(15, 0);
-        // printw("\n");
-        // move(15, 0);
-        // printw("Send message to client: ");
-
-        // char *str = (char *)malloc(1024);
-        // getstr(str);
-        // cursor.y = 15;
-        // cursor.x = 0;
-        // move(15, 0);
-        // printw("Waiting for message from client...\n");
-        // refresh();
-        // string user_input = str;
-        // user_input = user_input + "\n";
-        // send(client_socket, user_input.c_str(), user_input.length() + 1, 0);
-        // free(str);
     }
 }
 

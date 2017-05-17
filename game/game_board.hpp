@@ -1,3 +1,9 @@
+#include "game_piece.hpp"
+#include <ncurses.h>
+#include <iostream>
+#include <sys/time.h>
+#include <cstdlib>
+
 #define BOARD_SIZE 10
 
 /**
@@ -23,7 +29,11 @@ class Gameboard {
 public:
     char boardArray[BOARD_SIZE][BOARD_SIZE];
 
-    Gameboard(bool host);
+    Gameboard();
+
+    void generateRandomBoard(bool host);
+
+    void generateManualBoard();
 
     void dummyFunction();
 
@@ -41,4 +51,10 @@ private:
     void addPieceToBoardArray(int orientation, int starting_peg, int piece_length, char piece_symbol);
 
     void setIsHost(bool host);
+
+    void removePreviousHighlight(int cursor_x, int cursor_y, int ship_length, int orientation);
+
+    void displayEmptyBoard();
+
+    void highlightShip(int cursor_x, int cursor_y, int ship_length, int orientation, char ship_symbol);
 };

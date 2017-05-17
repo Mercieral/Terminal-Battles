@@ -1,20 +1,191 @@
 #include "game_board.hpp"
-#include "game_piece.hpp"
-#include <iostream>
-#include <sys/time.h>
-#include <cstdlib>
 
 using namespace std;
 
 Game_Piece piece_array[5];
 
-// empty constructor
-Gameboard::Gameboard(bool host) {
+Gameboard::Gameboard() {
+  //empty constructor
+}
+
+void Gameboard::generateRandomBoard(bool host) {
     setIsHost(host);
     initializeBoard();
     initializeGamePieces();
     generateBoardPlacement();
-//    printBoard();
+}
+
+void Gameboard::generateManualBoard() {
+  initializeBoard();
+  initializeGamePieces();
+  displayEmptyBoard();
+
+  bool isPlacing = true;
+  int cursor_x = 24, cursor_y = 13, grid_x = 0, grid_y = 0, ship_to_place = 0, orientation = 0;
+  move(cursor_y, cursor_x);
+  refresh();
+
+  while (isPlacing)
+  {
+    Game_Piece ship = piece_array[ship_to_place];
+    highlightShip(cursor_x, cursor_y, ship.Get_Piece_Length(), orientation, ship.Get_Piece_Symbol());
+    switch (getch())
+    {
+    case KEY_LEFT:
+    case 'a':
+        if (orientation == 0)
+        {
+          if ((cursor_x - (4 * (ship.Get_Piece_Length() - 1))) > 8)
+          {
+              removePreviousHighlight(cursor_x, cursor_y, ship.Get_Piece_Length(), orientation);
+              cursor_x -= 4;
+              grid_x--;
+          } //Still on board
+        } //Orientation is Horizontal
+        else
+        {
+          if (cursor_x > 8)
+          {
+              removePreviousHighlight(cursor_x, cursor_y, ship.Get_Piece_Length(), orientation);
+              cursor_x -= 4;
+              grid_x--;
+          } //Still on board
+        } //Orientation is Vertical
+        break;
+    case KEY_RIGHT:
+    case 'd':
+        if (cursor_x < 44)
+        {
+            removePreviousHighlight(cursor_x, cursor_y, ship.Get_Piece_Length(), orientation);
+            cursor_x += 4;
+            grid_x++;
+        }
+        break;
+    case KEY_UP:
+    case 'w':
+        if (orientation == 1)
+        {
+          if ((cursor_y - (ship.Get_Piece_Length() - 1)) > 9)
+          {
+            removePreviousHighlight(cursor_x, cursor_y, ship.Get_Piece_Length(), orientation);
+            cursor_y -= 1;
+            grid_y--;
+          } //Still on board
+        } //Orientation is Vertical
+        else
+        {
+          if (cursor_y > 9)
+          {
+              removePreviousHighlight(cursor_x, cursor_y, ship.Get_Piece_Length(), orientation);
+              cursor_y -= 1;
+              grid_y--;
+          } //Still on board
+        } //Orientation is Horizontal
+        break;
+    case KEY_DOWN:
+    case 's':
+        if (cursor_y < 18)
+        {
+            removePreviousHighlight(cursor_x, cursor_y, ship.Get_Piece_Length(), orientation);
+            cursor_y += 1;
+            grid_y++;
+        }
+        break;
+    case 'r':
+        if (orientation == 0)
+        {
+          if ((cursor_y - (ship.Get_Piece_Length() - 1)) >= 9)
+          {
+            removePreviousHighlight(cursor_x, cursor_y, ship.Get_Piece_Length(), orientation);
+            orientation = 1;
+          } //Still On Board
+        } //Changing to Vertical
+        else
+        {
+          if ((cursor_x - (4 * (ship.Get_Piece_Length() - 1))) >= 8)
+          {
+            removePreviousHighlight(cursor_x, cursor_y, ship.Get_Piece_Length(), orientation);
+            orientation = 0;
+          } //Still on Board
+        } //Changing to Horizontal
+    }
+    move(cursor_y, cursor_x);
+    refresh();
+  }
+}
+
+void Gameboard::highlightShip(int cursor_x, int cursor_y, int ship_length, int orientation, char ship_symbol) {
+  int i = 0;
+  if (orientation == 0)
+  {
+    for (i = 1; i < ship_length; i++) {
+      move(cursor_y, cursor_x - (4 * i));
+      attron(A_STANDOUT);
+      addch(ship_symbol);
+    }
+  } //Horizontal Orientation
+  else
+  {
+    for (i = 1; i < ship_length; i++) {
+      move(cursor_y - i, cursor_x);
+      attron(A_STANDOUT);
+      addch(ship_symbol);
+    }
+  } //Vertical Orientation
+  attroff(A_STANDOUT);
+  move(cursor_y, cursor_x);
+}
+
+void Gameboard::displayEmptyBoard() {
+  move(6, 1);
+  printw(
+      "  --------------------Your Board--------------\n"
+      "   ____________________________________________\n"
+      "   |  | A | B | C | D | E | F | G | H | I | J |\n"
+      "   | 1|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 2|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 3|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 4|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 5|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 6|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 7|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 8|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 9|   |   |   |   |   |   |   |   |   |   |\n"
+      "   |10|   |   |   |   |   |   |   |   |   |   |\n"
+      "   --------------------------------------------\n"
+      "                                                ||\n"
+      "                                                ||\n"
+      "                                                ||\n"
+      " w, up arrow    - move the cursor up            ||\n"
+      " a, left arrow  - move the cursor left          ||\n"
+      " s, down arrow  - move the cursor down          ||\n"
+      " d, right arrow - move the cursor right         ||\n"
+      " r              - rotate piece                  ||\n"
+      " enter          - place piece                   ||\n");
+  attron(A_UNDERLINE);
+  move(21, 1);
+  printw("instructions");
+  attroff(A_UNDERLINE);
+  move(13, 24);
+  refresh();
+}
+
+void Gameboard::removePreviousHighlight(int cursor_x, int cursor_y, int ship_length, int orientation) {
+  int i = 0;
+  if (orientation == 0)
+  {
+    for (i = 1; i < ship_length; i++) {
+      move(cursor_y, cursor_x - (4 * i));
+      addch(' ');
+    }
+  } //Orientation is Horizontal
+  else
+  {
+    for (i = 1; i < ship_length; i++) {
+      move(cursor_y - i, cursor_x);
+      addch(' ');
+    }
+  } //Orientation is Vertical
 }
 
 void Gameboard::initializeBoard() {
