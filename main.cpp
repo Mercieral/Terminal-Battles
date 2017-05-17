@@ -120,6 +120,7 @@ void setupWindow() {
     init_pair(3, COLOR_WHITE, COLOR_BLUE);
     init_pair(4, COLOR_BLACK, COLOR_RED);
     init_pair(5, COLOR_BLACK, COLOR_YELLOW);
+    init_pair(6, COLOR_BLACK, COLOR_GREEN);
     resizeterm(30, 101);
     noecho();
     refresh();
