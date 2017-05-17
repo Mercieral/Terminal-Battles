@@ -5,7 +5,7 @@ using namespace std;
 
 void setupWindow();
 
-int connectToServer(string type);
+int connectToServer(char* type);
 
 void getHosts(int socket);
 
@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
         refresh();
         ret = startMenu();
         if (ret == 'h') {
-            for (int i = 8; i < 30; i++) {
+            for (int i = 7; i < 30; i++) {
                 mvprintw(i, 0, "\n");
             }
             refresh();
@@ -37,34 +37,38 @@ int main(int argc, char **argv) {
             echo();
             getnstr(str, 100);
             noecho();
-            if (strcmp(str, "") == 0) {
-                ret = 'e';
-            } else {
-//                char *strToSend = (char *) malloc(106);
-//                strToSend = (char *) "host,";
-                connectToServer("host,bleheheh");
+            if (strcmp(str, "") != 0) {
+                char strToSend[6+strlen(str)];
+                strcpy(strToSend, "host,");
+                strcat(strToSend, str);
+                connectToServer(strToSend);
                 Host host = Host();
                 host.connect();
             }
+            ret = 'e';
         } else if (ret == 'c') {
-            int socket = connectToServer("client");
+            int socket = connectToServer((char *) "client");
             //connectToServer("client");
-            for (int i = 8; i < 30; i++) {
+            for (int i = 7; i < 30; i++) {
                 mvprintw(i, 0, "\n");
             }
-            getHosts(socket);
+            if (socket != -1) {
+                getHosts(socket);
+            }
+            refresh();
             mvprintw(8, 2, "Enter the hostname or IP of the host: ");
             char *str = (char *) malloc(100);
             echo();
             getnstr(str, 100);
             noecho();
-            if (strcmp(str, "") == 0) {
-                ret = 'e';
-            } else {
+            if (strcmp(str, "") != 0) {
                 Client client = Client(str);
                 refresh();
                 client.connect();
             }
+            ret = 'e';
+        } else if (ret == 'q') {
+            break;
         }
     }
 
@@ -72,22 +76,35 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-int connectToServer(string type) {
+int connectToServer(char * type) {
     struct sockaddr_in server_address;
     unsigned short serverPort = 5000;
     int client_socket = socket(PF_INET, SOCK_STREAM, 0);
-    const char *msg = type.c_str();
     memset(&server_address, 0, sizeof(server_address));
     server_address.sin_family = AF_INET;
     server_address.sin_addr.s_addr = resolveName("localhost");
     server_address.sin_port = htons(serverPort);
-    connect(client_socket, (const struct sockaddr *) &server_address, sizeof(server_address));
-    send(client_socket, msg, strlen(msg), 0);
-    return client_socket;
+    if (connect(client_socket, (const struct sockaddr *) &server_address, sizeof(server_address)) < 0) {
+        printw("\nThe matchmaking server appears to be down =(\nUsers will only be able to connect by specifying the IP address manually...\n\n");
+        refresh();
+        return -1;
+    }
+    else {
+        send(client_socket, type, strlen(type), 0);
+        return client_socket;
+    }
 }
 
 void getHosts(int socket) {
     send(socket, "get", 3, 0);
+    char recv_buffer[1024];
+    recv(socket, recv_buffer, 1024, 0);
+//    mvprintw(16, 0, "printing hosts");
+//    mvprintw(17, 0, "'");
+//    mvprintw(17, 1, recv_buffer);
+//    printw("'");
+//    refresh();
+//    while(1) {}
 }
 
 void setupWindow() {

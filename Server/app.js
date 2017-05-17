@@ -26,7 +26,7 @@ net.createServer(function (socket) {
 			var hostName = dataString.split(",")[1];
 			console.log("host connected, name='" + hostName + "', ip='" + socket.remoteAddress.replace(/^.*:/, '') + "'");
 			hostSockets.push(socket);
-			hostInfo.push(hostName+","+ socket.remoteAddress.replace(/^.*:/, ''));
+			hostInfo.push(hostName+";"+ socket.remoteAddress.replace(/^.*:/, ''));
 			//console.log(socket);
 		} else if (clientPatt.test(dataString)) {
 			//Client intiating connection
@@ -38,6 +38,7 @@ net.createServer(function (socket) {
 			//Client looking for hosts
             console.log("client called get, sending host info");
             console.log(hostInfo.toString());
+            socket.write(hostInfo.toString());
 		}
 	});
 

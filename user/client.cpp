@@ -18,6 +18,11 @@ void Client::connect()
 	memset(&server_address, 0, sizeof(server_address));
 	server_address.sin_family = AF_INET;
 	server_address.sin_addr.s_addr = resolveName(serverName);
+	if (server_address.sin_addr.s_addr == 0) {
+		mvprintw(7,2,"Could not find the host... Please try again\n");
+		refresh();
+		return;
+	}
 	server_address.sin_port = htons(serverPort);
 	printw("Created the endpoint structure\n");
 	refresh();
@@ -25,10 +30,10 @@ void Client::connect()
 	// Active open
 	if (::connect(client_socket, (const struct sockaddr *)&server_address, sizeof(server_address)) < 0)
 	{
-		endwin();
-		cout << "Error trying to accept client connection. Error = " << strerror(errno) << "\n";
+		printw("Error trying to connect to the Host with that name\n");
+		refresh();
 		close(client_socket);
-		exit(1);
+		return;
 	} //socket failed to connect
 
 	printw("Please wait for a response from the host\n");
@@ -64,9 +69,7 @@ unsigned long Client::resolveName(const char *name)
 	struct hostent *host;
 	if ((host = gethostbyname(name)) == NULL)
 	{
-		endwin();
-		perror("getHostByName() failed");
-		exit(1);
+		return 0;
 	}
 	return *((unsigned long *)host->h_addr_list[0]);
 }
