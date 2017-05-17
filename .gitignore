@@ -40,3 +40,6 @@ TestFiles/battleship
 
 # CMake
 cmake-build-debug/
+
+#Ignore node modules for server
+Server/node_modules

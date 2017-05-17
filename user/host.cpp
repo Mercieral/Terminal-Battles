@@ -5,8 +5,6 @@ void Host::connect()
 	int host_socket;
 	struct sockaddr_in server_address;
 
-	move(8, 0);
-
 	//Initialize the endpoint structure
 	memset(&server_address, 0, sizeof(server_address));
 	server_address.sin_family = AF_INET;
@@ -50,14 +48,15 @@ void Host::connect()
 	struct sockaddr_in client_address;
 	socklen_t address_size = sizeof(client_address);
 
-	while (true)
+	bool isRunning = true;
+
+	while (isRunning)
 	{
 		if ((client_socket = accept(host_socket, (struct sockaddr *)&client_address, &address_size)) < 0)
 		{
-			endwin();
-			cout << "Error trying to accept client connection. Error = " << strerror(errno) << "\n";
-			close(host_socket);
-			exit(1);
+			printw("Error trying to accept client connection.\n");
+			refresh();
+			continue;
 		}
 
 		if (acceptClientConnection())
