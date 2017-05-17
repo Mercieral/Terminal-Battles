@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include <cstdlib>
+#include <queue>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <ncurses.h>
@@ -48,6 +49,8 @@ protected:
     User(bool isHost) : isHost(isHost) {}
 
     char handleAttack(coordinates attack_coords, int client_socket, Gameboard board);
+
+    void messageLog(string message);
 };
 
 /**
