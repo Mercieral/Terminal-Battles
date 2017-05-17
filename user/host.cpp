@@ -66,6 +66,10 @@ void Host::connect()
 			const char *msg = "Connection accepted by host\n";
 			send(client_socket, msg, strlen(msg), 0);
 			this->gameLoop(client_socket);
+            mvprintw(6,0,"\n\n");
+            close(client_socket);
+            close(host_socket);
+            return;
 		}
 		else
 		{

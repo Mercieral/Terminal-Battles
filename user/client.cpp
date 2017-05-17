@@ -42,17 +42,15 @@ void Client::connect()
 	int len = recv(client_socket, received_msg, 1024, 0);
 	if (len < 0)
 	{
-		endwin();
-		cout << "Error receiving msg. Error = " << strerror(errno) << "\n";
+		mvprintw(6,0,"The Host has ended the connection\n");
 		close(client_socket);
-		exit(1);
+		return;
 	}
 	else if (len == 0)
 	{
-		endwin();
-		cout << "Connection terminated, exiting\n";
+		mvprintw(6,0,"The Host has ended the connection\n");
 		close(client_socket);
-		exit(1);
+		return;
 	}
 	else
 	{
@@ -60,6 +58,7 @@ void Client::connect()
 		refresh();
 		free(received_msg);
 		this->gameLoop(client_socket);
+		mvprintw(6,0,"\n\n");
 	}
 }
 

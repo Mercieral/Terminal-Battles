@@ -86,7 +86,7 @@ void User::gameLoop(int client_socket)
                     move(20, 52);
                     attron(COLOR_PAIR(5));
                     printw("    You already attacked there! Try again       ");
-                    attron(COLOR_PAIR(1));
+                    attroff(COLOR_PAIR(1));
                     move(22, 52);
                     refresh();
                     break;
@@ -135,12 +135,14 @@ void User::gameLoop(int client_socket)
                         }
                         if (hitsOnEnemy == MAX_HITS)
                         {
-                            endwin(); // Finishes graphics
-                            cout << "You won!\n";
-                            close(client_socket);
-                            free(received_msg);
-                            gameIsRunning = false;
-                            exit(1);
+                            attron(COLOR_PAIR(6));
+                            mvprintw(20,52,"                    You Won!                   ");
+                            mvprintw(21,52,"   press any key to go back to the main menu   ");
+                            attron(COLOR_PAIR(1));
+                            move(22, 52);
+                            refresh();
+                            getch();
+                            return;
                         }
                         attron(COLOR_PAIR(4));
                         answer = 'h';
@@ -193,12 +195,14 @@ void User::gameLoop(int client_socket)
                 hitsOnSelf++;
                 if (hitsOnSelf == MAX_HITS)
                 {
-                    endwin(); // Finishes graphics
-                    cout << "Enemy won!\n";
-                    close(client_socket);
-                    free(received_msg);
-                    gameIsRunning = false;
-                    exit(1);
+                    attron(COLOR_PAIR(4));
+                    mvprintw(20,52,"                   You Lost!                   ");
+                    mvprintw(21,52,"   press any key to go back to the main menu   ");
+                    attroff(COLOR_PAIR(1));
+                    move(22, 52);
+                    refresh();
+                    getch();
+                    return;
                 }
             }
             isMyTurn = true;
