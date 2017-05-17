@@ -67,7 +67,7 @@ TODO
 
 ## Game Design and Setup
 
-Using design principles learned in previous classes, the layout of the project is designed to be TODO
+Using design principles learned in previous classes, the layout of the project is designed to be TODO. The layout of the project is made so the game can be easily extended to add additional features or use the code to create another network terminal game.
 
 ```
 main.cpp
@@ -106,10 +106,12 @@ TODO
 
 Refer to [Issues](https://github.com/Mercieral/Terminal-Battles/issues) on the project, but some intial issues we had are as follows:
 
-#### NCurses display issues
+#### ncurses display issues
 [comment]: <> (Issue: Mercieral/Terminal-Battles#5)
 
 Occasionally the screen will have trouble displaying characters correctly at the right place or showing all the characters. To solve this issue, close the exectuable and re-run the application. If this does now solve the problem, rebuild the application or refer to [Screen size issue](#screen-size-adjusting)
+
+![Show missing line](https://raw.githubusercontent.com/Mercieral/Terminal-Battles/master/images/error_missing_line.png)
 
 #### Coloring on other operating systems
 [comment]: <> (Issue: Mercieral/Terminal-Battles#6)
