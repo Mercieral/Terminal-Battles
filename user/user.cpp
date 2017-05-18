@@ -122,13 +122,6 @@ void User::gameLoop(int client_socket)
                     {
                         answer_str = "Hit";
                         hitsOnEnemy++;
-                        beep();
-                        // int b = beep();
-                        // if(b != OK){
-                        //   move(23, 52);
-                        //   printw("Did not beep\n");
-                        //   refresh();
-                        // }
                         if (answer != 'h') {
                             switch (answer) {
                                 case 'a':
@@ -147,17 +140,6 @@ void User::gameLoop(int client_socket)
                                     enemyShipStatus = "Enemy Patrol boat sunk!";
                                     break;
                             }
-                        }
-                        if (hitsOnEnemy == MAX_HITS)
-                        {
-                            attron(COLOR_PAIR(6));
-                            mvprintw(20,52,"                    You Won!                   ");
-                            mvprintw(21,52,"   press any key to go back to the main menu   ");
-                            attron(COLOR_PAIR(1));
-                            move(22, 52);
-                            refresh();
-                            getch();
-                            return;
                         }
                         attron(COLOR_PAIR(4));
                         answer = 'h';
@@ -179,6 +161,38 @@ void User::gameLoop(int client_socket)
                         answer_str);
                     if (enemyShipStatus != "")  {
                         messageLog(enemyShipStatus);
+                    }
+                    if (hitsOnEnemy == MAX_HITS)
+                    {
+                        // FIXME: Add sending and receiving game pieces.
+                        // Sending pieces
+                        char_coordinates send_coor;
+                        for (int r = 0; r < BOARD_SIZE; r++) {
+                            for (int c = 0; c < BOARD_SIZE; c++) {
+                                send_coor.x = r;
+                                send_coor.y = c;
+                                send_coor.c = myBoard.boardArray[c][r];
+                                send(client_socket, &send_coor, sizeof(send_coor), 0);
+                            }
+                        }
+                        // Receive from enemy.
+                        for (int r = 0; r < BOARD_SIZE; r++) {
+                            for (int c = 0; c < BOARD_SIZE; c++) {
+                                if(recv(client_socket, &send_coor, sizeof(send_coor), MSG_WAITALL) == -1){
+                                    // handle error
+                                }
+                                handleFullBoard(send_coor);
+                            }
+                        }
+                        // Change message
+                        attron(COLOR_PAIR(6));
+                        mvprintw(20,52,"                    You Won!                   ");
+                        mvprintw(21,52,"   press any key to go back to the main menu   ");
+                        attron(COLOR_PAIR(1));
+                        move(22, 52);
+                        refresh();
+                        getch();
+                        return;
                     }
                     break;
                 }
@@ -210,6 +224,28 @@ void User::gameLoop(int client_socket)
                 hitsOnSelf++;
                 if (hitsOnSelf == MAX_HITS)
                 {
+                    // FIXME: Add receiving and sending game pieces.
+                    // receive pieces from enemy
+                    char_coordinates recv_coor;
+                    for (int r = 0; r < BOARD_SIZE; r++) {
+                        for (int c = 0; c < BOARD_SIZE; c++) {
+                            if(recv(client_socket, &recv_coor, sizeof(recv_coor), MSG_WAITALL) == -1){
+                                // handle error
+                            }
+                            handleFullBoard(recv_coor);
+
+                        }
+                    }
+                    // Sending pieces to enemy
+                    for (int r = 0; r < BOARD_SIZE; r++) {
+                        for (int c = 0; c < BOARD_SIZE; c++) {
+                            recv_coor.x = r;
+                            recv_coor.y = c;
+                            recv_coor.c = myBoard.boardArray[c][r];
+                            send(client_socket, &recv_coor, sizeof(recv_coor), 0);
+                        }
+                    }
+                    // Change message
                     attron(COLOR_PAIR(4));
                     mvprintw(20,52,"                   You Lost!                   ");
                     mvprintw(21,52,"   press any key to go back to the main menu   ");
@@ -299,6 +335,39 @@ void User::printClientIP(struct sockaddr_in their_address)
     cout << "Connection established with " << s << "\n";
 }
 
+void User::handleFullBoard(char_coordinates cc)
+{
+    int y_coor = 3 + cc.y + 6;
+    int x_coor = 57 + (4 * cc.x);
+    move(y_coor, x_coor);
+    char c = inch() & A_CHARTEXT;
+    if (c == 'm' || cc.c == 'w'){
+        attron(COLOR_PAIR(3));
+    } else {
+        attron(COLOR_PAIR(2));
+    }
+    if (c == ' ') {
+        if (cc.c == 'w') {
+            addch(' ');
+        } else {
+            addch(cc.c);
+        }
+    }
+    if (c == 'h') {
+        attron(COLOR_PAIR(4));
+        addch(cc.c);
+        attron(COLOR_PAIR(2));
+    }
+
+    move(y_coor, x_coor-1);
+    // Color left
+    addch(' ');
+    // Color right
+    move(y_coor, x_coor+1);
+    addch(' ');
+    attron(COLOR_PAIR(1));
+}
+
 char User::handleAttack(coordinates attack_coords, int client_socket, Gameboard board)
 {
     move(23, 52);
@@ -357,6 +426,13 @@ char User::handleAttack(coordinates attack_coords, int client_socket, Gameboard 
         move(3 + attack_coords.y + 6, 8 + (4 * attack_coords.x));
         addch('X');
         attron(COLOR_PAIR(1));
+        beep();
+        // int b = beep();
+        // if(b != OK){
+        //   move(23, 52);
+        //   printw("Did not beep\n");
+        //   refresh();
+        // }
         send(client_socket, &result, sizeof(char), 0);
         // return result;
     }

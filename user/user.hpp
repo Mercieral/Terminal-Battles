@@ -21,6 +21,11 @@ struct coordinates {
     int y, x;
 };
 
+struct char_coordinates {
+    int y, x;
+    char c;
+};
+
 
 /**
  * User abstract class that implements duplicate code
@@ -51,6 +56,8 @@ protected:
     char handleAttack(coordinates attack_coords, int client_socket, Gameboard board);
 
     void messageLog(string message);
+
+    void handleFullBoard(char_coordinates cc);
 };
 
 /**

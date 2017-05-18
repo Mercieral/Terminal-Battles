@@ -233,6 +233,7 @@ void setupWindow() {
     init_pair(4, COLOR_BLACK, COLOR_RED);
     init_pair(5, COLOR_BLACK, COLOR_YELLOW);
     init_pair(6, COLOR_BLACK, COLOR_GREEN);
+    init_pair(7, COLOR_WHITE, COLOR_MAGENTA);
     resizeterm(30, 101);
     noecho();
     refresh();
