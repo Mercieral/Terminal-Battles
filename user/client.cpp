@@ -31,6 +31,7 @@ void Client::connect()
 	if (::connect(client_socket, (const struct sockaddr *)&server_address, sizeof(server_address)) < 0)
 	{
         mvprintw(7,2,"Error trying to connect to the Host with that name\n");
+        mvprintw(6,2,strerror(errno));
 		refresh();
 		close(client_socket);
 		return;

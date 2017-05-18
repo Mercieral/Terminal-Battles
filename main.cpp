@@ -86,11 +86,11 @@ int main(int argc, char **argv) {
 
 int connectToServer(char * type) {
     struct sockaddr_in server_address;
-    unsigned short serverPort = 80;
+    unsigned short serverPort = 5000;
     int client_socket = socket(PF_INET, SOCK_STREAM, 0);
     memset(&server_address, 0, sizeof(server_address));
     server_address.sin_family = AF_INET;
-    server_address.sin_addr.s_addr = resolveName("https://terminal-battles.herokuapp.com");
+    server_address.sin_addr.s_addr = resolveName("ec2-52-15-232-246.us-east-2.compute.amazonaws.com");
     server_address.sin_port = htons(serverPort);
     if (connect(client_socket, (const struct sockaddr *) &server_address, sizeof(server_address)) < 0) {
         printw("\nThe matchmaking server appears to be down =(\nUsers will only be able to connect by specifying the IP address manually...\n\n");
