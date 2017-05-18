@@ -12,6 +12,9 @@ int patrol_count = 2;
 
 void User::gameLoop(int client_socket)
 {
+    while(!logQueue.empty()) {
+        logQueue.pop();
+    }
     char *received_msg = (char *)malloc(1024);
     //const char *msg = "Your Turn\n";
     bool gameIsRunning = true;
