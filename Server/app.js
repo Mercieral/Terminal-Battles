@@ -48,7 +48,7 @@ net.createServer(function (socket) {
 	});
 
 
-}).listen(5000);
+}).listen(process.env.PORT || 5000);
 
 // Put a friendly message on the terminal of the server.
 console.log("Matchmaking server running at port 5000\n");
