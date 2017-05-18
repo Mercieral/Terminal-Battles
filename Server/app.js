@@ -38,16 +38,21 @@ net.createServer(function (socket) {
 			//Client looking for hosts
             console.log("client called get, sending host info");
             console.log(hostInfo.toString());
-            socket.write(hostInfo.toString());
+            socket.write(hostInfo.toString() + '\0');
 		}
 	});
 
 	// Remove the client from the list when it leaves
 	socket.on('end', function () {
 		let index = hostSockets.indexOf(socket);
-        console.log("user disconnected, host index = " + index);
-		hostSockets.splice(index, 1);
-		hostInfo.splice(index, 1);
+        if (index != -1) {
+            console.log("user disconnected, host index = " + index);
+            hostSockets.splice(index, 1);
+            hostInfo.splice(index, 1);
+		}
+		else {
+            console.log("user disconnected, client");
+		}
 	});
 
 

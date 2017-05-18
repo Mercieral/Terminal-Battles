@@ -13,8 +13,11 @@ char startMenu();
 
 unsigned long resolveName(const char *name);
 
+int matchmaking_socket;
+
 void signal_handler(int sig) {
     endwin();
+    close(matchmaking_socket);
     exit(0);
 }
 
@@ -41,31 +44,36 @@ int main(int argc, char **argv) {
                 char strToSend[6+strlen(str)];
                 strcpy(strToSend, "host,");
                 strcat(strToSend, str);
-                connectToServer(strToSend);
+                matchmaking_socket = connectToServer(strToSend);
                 Host host = Host();
                 host.connect();
+                close(matchmaking_socket);
             }
             ret = 'e';
         } else if (ret == 'c') {
-            int socket = connectToServer((char *) "client");
-            //connectToServer("client");
             for (int i = 7; i < 30; i++) {
                 mvprintw(i, 0, "\n");
             }
-            if (socket != -1) {
-                getHosts(socket);
+            move(7,0);
+            matchmaking_socket = connectToServer((char *) "client");
+            if (matchmaking_socket != -1) {
+                getHosts(matchmaking_socket);
             }
-            refresh();
-            mvprintw(8, 2, "Enter the hostname or IP of the host: ");
-            char *str = (char *) malloc(100);
-            echo();
-            getnstr(str, 100);
-            noecho();
-            if (strcmp(str, "") != 0) {
-                Client client = Client(str);
+            else {
                 refresh();
-                client.connect();
+                mvprintw(11, 0, "Enter the hostname or IP of the host: ");
+                char *str = (char *) malloc(100);
+                echo();
+                getnstr(str, 100);
+                noecho();
+                if (strcmp(str, "") != 0) {
+                    Client client = Client(str);
+                    refresh();
+                    close(matchmaking_socket);
+                    client.connect();
+                }
             }
+            close(matchmaking_socket);
             ret = 'e';
         } else if (ret == 'q') {
             break;
@@ -99,12 +107,116 @@ void getHosts(int socket) {
     send(socket, "get", 3, 0);
     char recv_buffer[1024];
     recv(socket, recv_buffer, 1024, 0);
-//    mvprintw(16, 0, "printing hosts");
-//    mvprintw(17, 0, "'");
-//    mvprintw(17, 1, recv_buffer);
-//    printw("'");
-//    refresh();
-//    while(1) {}
+    for (int i = 8; i < 30; i++) {
+        mvprintw(i, 0, "\n");
+    }
+    refresh();
+    char** hostNames = (char**) malloc((30+2) * sizeof(char*));
+    char** hostIPs = (char**) malloc(30 * sizeof(char*));
+    char * hostInfo, *hostName, *hostIP, * brkHost, * brkInfo ;
+    hostInfo = strtok_r(recv_buffer, ",", &brkHost);
+    int counter = 0;
+    while(hostInfo != NULL) {
+        hostName = strtok_r(hostInfo, ";", &brkInfo);
+        hostIP = strtok_r(NULL, ";", &brkInfo);
+        hostNames[counter] = hostName;
+        hostIPs[counter] = hostIP;
+        hostInfo = strtok_r(NULL, ",", &brkHost);
+        counter++;
+    }
+    hostNames[counter+1] = (char*)"Enter IP/Hostname manually";
+    hostNames[counter+2] = (char*)"Exit";
+
+    int i = 0;
+    move(10, 4);
+    refresh();
+    for (i = 0; i < counter + 3; i++) {
+        move(10 + i, 4);
+        if ((i == 0 && counter > 0) || (counter == 0 && i == 1))
+            attron(A_STANDOUT); // highlights the first item.
+        else
+            attroff(A_STANDOUT);
+        if (i == counter){
+            printw("---------------");
+        }
+        else {
+            printw(hostNames[i]);
+        }
+
+    }
+    attron(A_UNDERLINE);
+    move(8, 2);
+    printw("Pick an active host (");
+    printw(to_string(counter).c_str());
+    printw(" waiting)");
+    attroff(A_UNDERLINE);
+    refresh();
+    i = (counter == 0) ? 1 : 0;
+    curs_set(0);
+    bool isActiveMenu = true;
+    int prev = 0;
+    while (isActiveMenu) {
+        prev = i;
+        // use a variable to increment or decrement the value based on the input.
+        switch (getch()) {
+            case KEY_UP:
+                i--;
+                i = (i < 0) ?  counter+2 : i;
+                if (i == counter) i--;
+                if (counter == 0) i = (prev == 1) ? 2 : 1;
+                break;
+            case KEY_DOWN:
+                i++;
+                i = (i > counter+2) ? 0 : i;
+                if (i == counter) i++;
+                if (counter == 0) i = (prev == 1) ? 2 : 1;
+                break;
+            case 10:
+                if (i == counter+1){
+                    curs_set(2);
+                    mvprintw(6, 2, "Enter the hostname or IP of the host: ");
+                    char *str = (char *) malloc(100);
+                    echo();
+                    refresh();
+                    getnstr(str, 100);
+                    noecho();
+                    if (strcmp(str, "") != 0) {
+                        for (int i = 6; i < 30; i++) {
+                            mvprintw(i, 0, "\n");
+                        }
+                        refresh();
+                        curs_set(2);
+                        Client client = Client(str);
+                        refresh();
+                        client.connect();
+                        return;
+                    }
+                    curs_set(1);
+                    refresh();
+                }
+                else if (i == counter+2) {
+                    curs_set(2);
+                    return;
+                }
+                else {
+                    for (int i = 6; i < 30; i++) {
+                        mvprintw(i, 0, "\n");
+                    }
+                    curs_set(2);
+                    refresh();
+                    Client client = Client(hostIPs[i]);
+                    client.connect();
+                    return;
+                }
+        }
+        // now highlight the next item in the list.
+        attroff(A_STANDOUT);
+        mvprintw(10 + prev, 4, hostNames[prev]);
+        attron(A_STANDOUT);
+        mvprintw(10 + i, 4, hostNames[i]);
+        attroff(A_STANDOUT);
+    }
+    curs_set(2);
 }
 
 void setupWindow() {
