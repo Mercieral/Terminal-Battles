@@ -107,13 +107,6 @@ void User::gameLoop(int client_socket)
                     {
                         answer_str = "Hit";
                         hitsOnEnemy++;
-                        beep();
-                        // int b = beep();
-                        // if(b != OK){
-                        //   move(23, 52);
-                        //   printw("Did not beep\n");
-                        //   refresh();
-                        // }
                         if (answer != 'h') {
                             switch (answer) {
                                 case 'a':
@@ -342,6 +335,13 @@ char User::handleAttack(coordinates attack_coords, int client_socket, Gameboard 
         move(3 + attack_coords.y + 6, 8 + (4 * attack_coords.x));
         addch('X');
         attron(COLOR_PAIR(1));
+        beep();
+        // int b = beep();
+        // if(b != OK){
+        //   move(23, 52);
+        //   printw("Did not beep\n");
+        //   refresh();
+        // }
         send(client_socket, &result, sizeof(char), 0);
         // return result;
     }
