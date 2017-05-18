@@ -143,14 +143,19 @@ void Gameboard::generateManualBoard() {
 bool Gameboard::acceptGameboard() {
   move(20, 52);
   printw("Do you want to use this board? Enter Y/N");
-  switch (getch())
-  {
-    case 'y':
-      return true;
-    case 'n':
-      return false;
+  while(true) {
+    switch (getch())
+    {
+      case 'y':
+        return true;
+      case 'n':
+        return false;
+      default:
+        move(20, 52);
+        printw("Invalid Input please enter Y/N to accept board\n");
+        refresh();
+    }
   }
-  return true;
 }
 
 void Gameboard::placeGamePiece(int cursor_x, int cursor_y, int orientation, int ship_length, char ship_symbol) {
