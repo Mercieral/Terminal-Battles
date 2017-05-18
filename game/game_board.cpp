@@ -21,7 +21,7 @@ void Gameboard::generateManualBoard() {
   displayEmptyBoard();
 
   bool isPlacing = true;
-  int cursor_x = 24, cursor_y = 13, grid_x = 0, grid_y = 0, ship_to_place = 0, orientation = 0;
+  int cursor_x = 24, cursor_y = 13, ship_to_place = 0, orientation = 0;
   move(cursor_y, cursor_x);
   refresh();
 
@@ -39,7 +39,6 @@ void Gameboard::generateManualBoard() {
           {
               removePreviousHighlight(cursor_x, cursor_y, ship.Get_Piece_Length(), orientation);
               cursor_x -= 4;
-              grid_x--;
           } //Still on board
         } //Orientation is Horizontal
         else
@@ -48,7 +47,6 @@ void Gameboard::generateManualBoard() {
           {
               removePreviousHighlight(cursor_x, cursor_y, ship.Get_Piece_Length(), orientation);
               cursor_x -= 4;
-              grid_x--;
           } //Still on board
         } //Orientation is Vertical
         break;
@@ -58,7 +56,6 @@ void Gameboard::generateManualBoard() {
         {
             removePreviousHighlight(cursor_x, cursor_y, ship.Get_Piece_Length(), orientation);
             cursor_x += 4;
-            grid_x++;
         }
         break;
     case KEY_UP:
@@ -69,7 +66,6 @@ void Gameboard::generateManualBoard() {
           {
             removePreviousHighlight(cursor_x, cursor_y, ship.Get_Piece_Length(), orientation);
             cursor_y -= 1;
-            grid_y--;
           } //Still on board
         } //Orientation is Vertical
         else
@@ -78,7 +74,6 @@ void Gameboard::generateManualBoard() {
           {
               removePreviousHighlight(cursor_x, cursor_y, ship.Get_Piece_Length(), orientation);
               cursor_y -= 1;
-              grid_y--;
           } //Still on board
         } //Orientation is Horizontal
         break;
@@ -88,7 +83,6 @@ void Gameboard::generateManualBoard() {
         {
             removePreviousHighlight(cursor_x, cursor_y, ship.Get_Piece_Length(), orientation);
             cursor_y += 1;
-            grid_y++;
         }
         break;
     case 'r':
@@ -114,8 +108,21 @@ void Gameboard::generateManualBoard() {
           placeGamePiece(cursor_x, cursor_y, orientation, ship.Get_Piece_Length(), ship.Get_Piece_Symbol());
           if (ship_to_place == 4)
           {
-            isPlacing = false;
-            break;
+            if (!acceptGameboard())
+            {
+              ship_to_place = 0;
+              orientation = 0;
+              cursor_y = 13;
+              cursor_x = 24;
+              initializeBoard();
+              displayEmptyBoard();
+              break;
+            } //Remake Gameboard
+            else
+            {
+              isPlacing = false;
+              break;
+            }
           }
           ship_to_place++;
           cursor_y = 13;
@@ -131,6 +138,19 @@ void Gameboard::generateManualBoard() {
     move(cursor_y, cursor_x);
     refresh();
   }
+}
+
+bool Gameboard::acceptGameboard() {
+  move(20, 52);
+  printw("Do you want to use this board? Enter Y/N");
+  switch (getch())
+  {
+    case 'y':
+      return true;
+    case 'n':
+      return false;
+  }
+  return true;
 }
 
 void Gameboard::placeGamePiece(int cursor_x, int cursor_y, int orientation, int ship_length, char ship_symbol) {
