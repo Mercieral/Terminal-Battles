@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
 
 int connectToServer(char * type) {
     struct sockaddr_in server_address;
-    unsigned short serverPort = 5000;
+    unsigned short serverPort = 80;
     int client_socket = socket(PF_INET, SOCK_STREAM, 0);
     memset(&server_address, 0, sizeof(server_address));
     server_address.sin_family = AF_INET;
