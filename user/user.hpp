@@ -21,6 +21,11 @@ struct coordinates {
     int y, x;
 };
 
+struct char_coordinates {
+    int y, x;
+    char c;
+};
+
 
 /**
  * User abstract class that implements duplicate code

@@ -129,6 +129,19 @@ void User::gameLoop(int client_socket)
                         if (hitsOnEnemy == MAX_HITS)
                         {
                             // FIXME: Add sending and receiving game pieces.
+                            // Sending pieces
+                            for (int r = 0; r < BOARD_SIZE; r++) {
+                                for (int c = 0; c < BOARD_SIZE; c++) {
+
+                                }
+                            }
+                            // Receive from enemy.
+                            for (int r = 0; r < BOARD_SIZE; r++) {
+                                for (int c = 0; c < BOARD_SIZE; c++) {
+
+                                }
+                            }
+                            // Change message
                             attron(COLOR_PAIR(6));
                             mvprintw(20,52,"                    You Won!                   ");
                             mvprintw(21,52,"   press any key to go back to the main menu   ");
@@ -190,6 +203,19 @@ void User::gameLoop(int client_socket)
                 if (hitsOnSelf == MAX_HITS)
                 {
                     // FIXME: Add receiving and sending game pieces.
+                    // receive pieces from enemy
+                    for (int r = 0; r < BOARD_SIZE; r++) {
+                        for (int c = 0; c < BOARD_SIZE; c++) {
+
+                        }
+                    }
+                    // Sending pieces to enemy
+                    for (int r = 0; r < BOARD_SIZE; r++) {
+                        for (int c = 0; c < BOARD_SIZE; c++) {
+
+                        }
+                    }
+                    // Change message
                     attron(COLOR_PAIR(4));
                     mvprintw(20,52,"                   You Lost!                   ");
                     mvprintw(21,52,"   press any key to go back to the main menu   ");
