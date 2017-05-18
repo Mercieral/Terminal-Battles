@@ -10,7 +10,6 @@ void Host::connect()
 	server_address.sin_family = AF_INET;
 	server_address.sin_addr.s_addr = INADDR_ANY;
 	server_address.sin_port = htons(PORT);
-	printw("Created the endpoint structure\n");
 	refresh();
 
 	//Create socket
@@ -22,8 +21,6 @@ void Host::connect()
 		close(host_socket);
 		exit(1);
 	}
-	printw("Created the host socket\n");
-	refresh();
 
 	int on = 1;
 	if (setsockopt(host_socket, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)
@@ -41,8 +38,10 @@ void Host::connect()
 		close(host_socket);
 		exit(1);
 	}
-	listen(host_socket, 5);
-	printw("Socket bound and listening\n");
+	listen(host_socket, 100);
+    printw(        "\n  NOTE: if you are on a network using NAT addressing, clients will not be able to\n"
+                   "  connect to you until you port forward port 8888 in your router to your computer\n\n");
+	printw("  Waiting for a client connection...\n");
 	refresh();
 
 	struct sockaddr_in client_address;
@@ -61,7 +60,7 @@ void Host::connect()
 
 		if (acceptClientConnection())
 		{
-			printw("Connection was accepted, continuing\n");
+			printw("  Connection was accepted, continuing\n");
 			refresh();
 			const char *msg = "Connection accepted by host\n";
 			send(client_socket, msg, strlen(msg), 0);
@@ -83,7 +82,7 @@ void Host::connect()
 //Lets the host accept or reject an established connection with a client
 bool Host::acceptClientConnection()
 {
-	printw("\nWould you like to accept the connection, Y/N?\n");
+	printw("\n  Would you like to accept the connection, Y/N?\n");
 	refresh();
 
 	while (1)
@@ -92,7 +91,7 @@ bool Host::acceptClientConnection()
 		user_input = getch();
 		if (user_input == 'Y' || user_input == 'y')
 		{
-			printw("accepting connection! Have fun!\n");
+			printw("  accepting connection! Have fun!\n");
 			refresh();
 			return true;
 		}
