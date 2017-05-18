@@ -22,8 +22,9 @@ void User::gameLoop(int client_socket)
     int hitsOnEnemy = 0;
     int hitsOnSelf = 0;
 
-    move(23, 1);
-    printw("Would you like to create your board manually? Enter: y/n\n");
+    move(22, 1);
+    printw("Would you like to create your board manually? Enter: y/n");
+    move(23,1);
     refresh();
 
     Gameboard myBoard = Gameboard();
