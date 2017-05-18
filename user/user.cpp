@@ -141,31 +141,6 @@ void User::gameLoop(int client_socket)
                                     break;
                             }
                         }
-                        if (hitsOnEnemy == MAX_HITS)
-                        {
-                            // FIXME: Add sending and receiving game pieces.
-                            // Sending pieces
-                            for (int r = 0; r < BOARD_SIZE; r++) {
-                                for (int c = 0; c < BOARD_SIZE; c++) {
-
-                                }
-                            }
-                            // Receive from enemy.
-                            for (int r = 0; r < BOARD_SIZE; r++) {
-                                for (int c = 0; c < BOARD_SIZE; c++) {
-
-                                }
-                            }
-                            // Change message
-                            attron(COLOR_PAIR(6));
-                            mvprintw(20,52,"                    You Won!                   ");
-                            mvprintw(21,52,"   press any key to go back to the main menu   ");
-                            attron(COLOR_PAIR(1));
-                            move(22, 52);
-                            refresh();
-                            getch();
-                            return;
-                        }
                         attron(COLOR_PAIR(4));
                         answer = 'h';
                     }
@@ -186,6 +161,38 @@ void User::gameLoop(int client_socket)
                         answer_str);
                     if (enemyShipStatus != "")  {
                         messageLog(enemyShipStatus);
+                    }
+                    if (hitsOnEnemy == MAX_HITS)
+                    {
+                        // FIXME: Add sending and receiving game pieces.
+                        // Sending pieces
+                        char_coordinates send_coor;
+                        for (int r = 0; r < BOARD_SIZE; r++) {
+                            for (int c = 0; c < BOARD_SIZE; c++) {
+                                send_coor.x = r;
+                                send_coor.y = c;
+                                send_coor.c = myBoard.boardArray[c][r];
+                                send(client_socket, &send_coor, sizeof(send_coor), 0);
+                            }
+                        }
+                        // Receive from enemy.
+                        for (int r = 0; r < BOARD_SIZE; r++) {
+                            for (int c = 0; c < BOARD_SIZE; c++) {
+                                if(recv(client_socket, &send_coor, sizeof(send_coor), MSG_WAITALL) == -1){
+                                    // handle error
+                                }
+                                handleFullBoard(send_coor, client_socket, myBoard);
+                            }
+                        }
+                        // Change message
+                        attron(COLOR_PAIR(6));
+                        mvprintw(20,52,"                    You Won!                   ");
+                        mvprintw(21,52,"   press any key to go back to the main menu   ");
+                        attron(COLOR_PAIR(1));
+                        move(22, 52);
+                        refresh();
+                        getch();
+                        return;
                     }
                     break;
                 }
@@ -219,15 +226,23 @@ void User::gameLoop(int client_socket)
                 {
                     // FIXME: Add receiving and sending game pieces.
                     // receive pieces from enemy
+                    char_coordinates recv_coor;
                     for (int r = 0; r < BOARD_SIZE; r++) {
                         for (int c = 0; c < BOARD_SIZE; c++) {
+                            if(recv(client_socket, &recv_coor, sizeof(recv_coor), MSG_WAITALL) == -1){
+                                // handle error
+                            }
+                            handleFullBoard(recv_coor, client_socket, myBoard);
 
                         }
                     }
                     // Sending pieces to enemy
                     for (int r = 0; r < BOARD_SIZE; r++) {
                         for (int c = 0; c < BOARD_SIZE; c++) {
-
+                            recv_coor.x = r;
+                            recv_coor.y = c;
+                            recv_coor.c = myBoard.boardArray[c][r];
+                            send(client_socket, &recv_coor, sizeof(recv_coor), 0);
                         }
                     }
                     // Change message
@@ -318,6 +333,39 @@ void User::printClientIP(struct sockaddr_in their_address)
     char s[INET6_ADDRSTRLEN];
     inet_ntop(their_address.sin_family, &their_address.sin_addr, s, sizeof(s));
     cout << "Connection established with " << s << "\n";
+}
+
+void User::handleFullBoard(char_coordinates cc, int client_socket, Gameboard board)
+{
+    int y_coor = 3 + cc.y + 6;
+    int x_coor = 57 + (4 * cc.x);
+    move(y_coor, x_coor);
+    char c = inch() & A_CHARTEXT;
+    if (c == 'm' || cc.c == 'w'){
+        attron(COLOR_PAIR(3));
+    } else {
+        attron(COLOR_PAIR(2));
+    }
+    if (c == ' ') {
+        if (cc.c == 'w') {
+            addch(' ');
+        } else {
+            addch(cc.c);
+        }
+    }
+    if (c == 'h') {
+        attron(COLOR_PAIR(4));
+        addch(cc.c);
+        attron(COLOR_PAIR(2));
+    }
+
+    move(y_coor, x_coor-1);
+    // Color left
+    addch(' ');
+    // Color right
+    move(y_coor, x_coor+1);
+    addch(' ');
+    attron(COLOR_PAIR(1));
 }
 
 char User::handleAttack(coordinates attack_coords, int client_socket, Gameboard board)
