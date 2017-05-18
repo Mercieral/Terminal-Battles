@@ -87,12 +87,11 @@ void User::gameLoop(int client_socket)
                 }
                 break;
             case 'q':
-                endwin(); // Finishes graphics
-                cout << "Ending game due to a player quiting\n";
+                printw("Ending game due to a player quiting\n");
                 close(client_socket);
                 free(received_msg);
                 gameIsRunning = false;
-                exit(1);
+                return;
             case 10:
                 //do something
                 c = inch() & A_CHARTEXT;
@@ -116,7 +115,10 @@ void User::gameLoop(int client_socket)
                     char answer;
                     string answer_str;
                     string enemyShipStatus = "";
-                    recv(client_socket, &answer, sizeof(char), MSG_WAITALL);
+                    if (recv(client_socket, &answer, sizeof(char), MSG_WAITALL) <= 0) {
+                        printw("Host has quit the game!");
+                        return;
+                    }
                     if (answer == 'h' || answer == 'a' || answer == 'b'
                         || answer == 's' || answer == 'd' || answer == 'p')
                     {
@@ -178,7 +180,7 @@ void User::gameLoop(int client_socket)
                         // Receive from enemy.
                         for (int r = 0; r < BOARD_SIZE; r++) {
                             for (int c = 0; c < BOARD_SIZE; c++) {
-                                if(recv(client_socket, &send_coor, sizeof(send_coor), MSG_WAITALL) == -1){
+                                if(recv(client_socket, &send_coor, sizeof(send_coor), MSG_WAITALL) <= 0){
                                     // handle error
                                 }
                                 handleFullBoard(send_coor);
@@ -212,9 +214,10 @@ void User::gameLoop(int client_socket)
             move(22, 52);
             refresh();
             coordinates attack_coords;
-            if (recv(client_socket, &attack_coords, sizeof(attack_coords), MSG_WAITALL) == -1)
+            if (recv(client_socket, &attack_coords, sizeof(attack_coords), MSG_WAITALL) <= 0)
             {
-                //handle error
+                printw("Host has quit the game!");
+                return;
             }
             move(20, 52);
             printw("\n");
@@ -229,8 +232,9 @@ void User::gameLoop(int client_socket)
                     char_coordinates recv_coor;
                     for (int r = 0; r < BOARD_SIZE; r++) {
                         for (int c = 0; c < BOARD_SIZE; c++) {
-                            if(recv(client_socket, &recv_coor, sizeof(recv_coor), MSG_WAITALL) == -1){
-                                // handle error
+                            if(recv(client_socket, &recv_coor, sizeof(recv_coor), MSG_WAITALL) <= 0){
+                                printw("Host has quit the game!");
+                                return;
                             }
                             handleFullBoard(recv_coor);
 
