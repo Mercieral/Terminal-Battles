@@ -28,7 +28,7 @@ void User::gameLoop(int client_socket)
     {
       case 'y':
         myBoard.generateManualBoard();
-        //displayBoard(myBoard);
+        displayBoard(myBoard);
         break;
       case 'n':
         myBoard.generateRandomBoard(isHost);

@@ -28,7 +28,7 @@ void Gameboard::generateManualBoard() {
   while (isPlacing)
   {
     Game_Piece ship = piece_array[ship_to_place];
-    highlightShip(cursor_x, cursor_y, ship.Get_Piece_Length(), orientation, ship.Get_Piece_Symbol());
+    bool isValidPlacement = highlightShip(cursor_x, cursor_y, ship.Get_Piece_Length(), orientation, ship.Get_Piece_Symbol());
     switch (getch())
     {
     case KEY_LEFT:
@@ -108,32 +108,106 @@ void Gameboard::generateManualBoard() {
             orientation = 0;
           } //Still on Board
         } //Changing to Horizontal
-    }
+        break;
+    case 10:
+        if (isValidPlacement) {
+          placeGamePiece(cursor_x, cursor_y, orientation, ship.Get_Piece_Length(), ship.Get_Piece_Symbol());
+          if (ship_to_place == 4)
+          {
+            isPlacing = false;
+            break;
+          }
+          ship_to_place++;
+          cursor_y = 13;
+          cursor_x = 24;
+          break;
+        }
+        else
+        {
+          move(20, 52);
+          printw("Collision cannot place ship");
+        }
+    } //End of switch case
     move(cursor_y, cursor_x);
     refresh();
   }
 }
 
-void Gameboard::highlightShip(int cursor_x, int cursor_y, int ship_length, int orientation, char ship_symbol) {
+void Gameboard::placeGamePiece(int cursor_x, int cursor_y, int orientation, int ship_length, char ship_symbol) {
+  if (orientation == 0)
+  {
+    for (int i = 0; i < ship_length; i++) {
+      boardArray[cursor_y - 9][((cursor_x - (4 * i)) - 8)/4] = ship_symbol;
+    }
+  } //Orientation is horizontal
+  else
+  {
+    for (int i = 0; i < ship_length; i++) {
+      boardArray[(cursor_y - i) - 9][(cursor_x - 8)/4] = ship_symbol;
+    }
+  } //Orientation is vertical
+}
+
+bool Gameboard::highlightShip(int cursor_x, int cursor_y, int ship_length, int orientation, char ship_symbol) {
+  bool validPlacement = true;
   int i = 0;
   if (orientation == 0)
   {
-    for (i = 1; i < ship_length; i++) {
-      move(cursor_y, cursor_x - (4 * i));
-      attron(A_STANDOUT);
-      addch(ship_symbol);
+    for (i = 0; i < ship_length; i++) {
+      if (boardArray[cursor_y - 9][((cursor_x - (4 * i)) - 8)/4] != 'w')
+      {
+        validPlacement = false;
+      } //Collision with placed ship
+      else
+      {
+        move(cursor_y, cursor_x - (4 * i));
+        attron(A_STANDOUT);
+        addch(ship_symbol);
+      } //No ship collision
     }
   } //Horizontal Orientation
   else
   {
-    for (i = 1; i < ship_length; i++) {
-      move(cursor_y - i, cursor_x);
-      attron(A_STANDOUT);
-      addch(ship_symbol);
+    for (i = 0; i < ship_length; i++) {
+      if (boardArray[(cursor_y - i) - 9][(cursor_x - 8)/4] != 'w')
+      {
+        validPlacement = false;
+      } //Collision with placed ship
+      else
+      {
+        move(cursor_y - i, cursor_x);
+        attron(A_STANDOUT);
+        addch(ship_symbol);
+      } //No ship collision
     }
   } //Vertical Orientation
   attroff(A_STANDOUT);
   move(cursor_y, cursor_x);
+  return validPlacement;
+}
+
+void Gameboard::removePreviousHighlight(int cursor_x, int cursor_y, int ship_length, int orientation) {
+  int i = 0;
+  if (orientation == 0)
+  {
+    for (i = 0; i < ship_length; i++) {
+      if (boardArray[cursor_y - 9][((cursor_x - (4 * i)) - 8)/4] == 'w')
+      {
+        move(cursor_y, cursor_x - (4 * i));
+        addch(' ');
+      } //No collision with placed ship
+    }
+  } //Orientation is Horizontal
+  else
+  {
+    for (i = 0; i < ship_length; i++) {
+      if (boardArray[(cursor_y - i) - 9][(cursor_x - 8)/4] == 'w')
+      {
+        move(cursor_y - i, cursor_x);
+        addch(' ');
+      } //No collision with placed ship
+    }
+  } //Orientation is Vertical
 }
 
 void Gameboard::displayEmptyBoard() {
@@ -168,24 +242,6 @@ void Gameboard::displayEmptyBoard() {
   attroff(A_UNDERLINE);
   move(13, 24);
   refresh();
-}
-
-void Gameboard::removePreviousHighlight(int cursor_x, int cursor_y, int ship_length, int orientation) {
-  int i = 0;
-  if (orientation == 0)
-  {
-    for (i = 1; i < ship_length; i++) {
-      move(cursor_y, cursor_x - (4 * i));
-      addch(' ');
-    }
-  } //Orientation is Horizontal
-  else
-  {
-    for (i = 1; i < ship_length; i++) {
-      move(cursor_y - i, cursor_x);
-      addch(' ');
-    }
-  } //Orientation is Vertical
 }
 
 void Gameboard::initializeBoard() {

@@ -56,5 +56,7 @@ private:
 
     void displayEmptyBoard();
 
-    void highlightShip(int cursor_x, int cursor_y, int ship_length, int orientation, char ship_symbol);
+    bool highlightShip(int cursor_x, int cursor_y, int ship_length, int orientation, char ship_symbol);
+
+    void placeGamePiece(int cursor_x, int cursor_y, int orientation, int ship_length, char ship_symbol);
 };
