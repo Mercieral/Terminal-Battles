@@ -57,7 +57,7 @@ protected:
 
     void messageLog(string message);
 
-    void handleFullBoard(char_coordinates cc, int client_socket, Gameboard board);
+    void handleFullBoard(char_coordinates cc);
 };
 
 /**

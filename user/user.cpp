@@ -181,7 +181,7 @@ void User::gameLoop(int client_socket)
                                 if(recv(client_socket, &send_coor, sizeof(send_coor), MSG_WAITALL) == -1){
                                     // handle error
                                 }
-                                handleFullBoard(send_coor, client_socket, myBoard);
+                                handleFullBoard(send_coor);
                             }
                         }
                         // Change message
@@ -232,7 +232,7 @@ void User::gameLoop(int client_socket)
                             if(recv(client_socket, &recv_coor, sizeof(recv_coor), MSG_WAITALL) == -1){
                                 // handle error
                             }
-                            handleFullBoard(recv_coor, client_socket, myBoard);
+                            handleFullBoard(recv_coor);
 
                         }
                     }
@@ -335,7 +335,7 @@ void User::printClientIP(struct sockaddr_in their_address)
     cout << "Connection established with " << s << "\n";
 }
 
-void User::handleFullBoard(char_coordinates cc, int client_socket, Gameboard board)
+void User::handleFullBoard(char_coordinates cc)
 {
     int y_coor = 3 + cc.y + 6;
     int x_coor = 57 + (4 * cc.x);
