@@ -7,13 +7,6 @@ net.createServer(function (socket) {
 
 	socket.name = socket.remoteAddress + ":" + socket.remotePort;
 
-	// Put this new client in the list
-	// clients.push(socket);
-	// console.log(clients);
-	// console.log("-------------------------------");
-	// console.log(socket);
-	console.log("new user connected to server");
-
 	// Handle incoming messages from clients.
 	socket.on('data', function (data) {
 		var hostPatt = new RegExp("host");
@@ -24,20 +17,19 @@ net.createServer(function (socket) {
 		if (hostPatt.test(dataString)) {
             //Host initiating connection
 			var hostName = dataString.split(",")[1];
-			console.log("host connected, name='" + hostName + "', ip='" + socket.remoteAddress.replace(/^.*:/, '') + "'");
+			// console.log("host connected, name='" + hostName + "', ip='" + socket.remoteAddress.replace(/^.*:/, '') + "'");
 			hostSockets.push(socket);
 			hostInfo.push(hostName+";"+ socket.remoteAddress.replace(/^.*:/, ''));
 			//console.log(socket);
 		} else if (clientPatt.test(dataString)) {
 			//Client intiating connection
-			console.log("client connected");
-
+			// console.log("client connected");
 		}
 
 		if (getPatt.test(dataString)) {
 			//Client looking for hosts
-            console.log("client called get, sending host info");
-            console.log(hostInfo.toString());
+            // console.log("client called get, sending host info");
+            // console.log(hostInfo.toString());
             socket.write(hostInfo.toString() + '\0');
 		}
 	});
@@ -46,12 +38,12 @@ net.createServer(function (socket) {
 	socket.on('end', function () {
 		let index = hostSockets.indexOf(socket);
         if (index != -1) {
-            console.log("user disconnected, host index = " + index);
+            // console.log("user disconnected, host index = " + index);
             hostSockets.splice(index, 1);
             hostInfo.splice(index, 1);
 		}
 		else {
-            console.log("user disconnected, client");
+            // console.log("user disconnected, client");
 		}
 	});
 

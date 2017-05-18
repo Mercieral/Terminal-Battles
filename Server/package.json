@@ -19,5 +19,8 @@
   "homepage": "https://github.com/Mercieral/Terminal-Battles#readme",
   "dependencies": {
     "net": "^1.0.2"
+  },
+  "engines": {
+    "node": "7.7.1"
   }
 }
