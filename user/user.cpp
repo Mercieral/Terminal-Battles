@@ -128,6 +128,7 @@ void User::gameLoop(int client_socket)
                         }
                         if (hitsOnEnemy == MAX_HITS)
                         {
+                            // FIXME: Add sending and receiving game pieces.
                             attron(COLOR_PAIR(6));
                             mvprintw(20,52,"                    You Won!                   ");
                             mvprintw(21,52,"   press any key to go back to the main menu   ");
@@ -188,6 +189,7 @@ void User::gameLoop(int client_socket)
                 hitsOnSelf++;
                 if (hitsOnSelf == MAX_HITS)
                 {
+                    // FIXME: Add receiving and sending game pieces.
                     attron(COLOR_PAIR(4));
                     mvprintw(20,52,"                   You Lost!                   ");
                     mvprintw(21,52,"   press any key to go back to the main menu   ");
