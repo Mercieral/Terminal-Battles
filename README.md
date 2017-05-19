@@ -117,7 +117,7 @@ Occasionally the screen will have trouble displaying characters correctly at the
 #### Coloring on other operating systems
 [comment]: <> (Issue: Mercieral/Terminal-Battles#6)
 
-TODO - Aaron, upload image of your screen
+![MacOS coloring](https://raw.githubusercontent.com/Mercieral/Terminal-Battles/master/images/mac_coloring.png)mac_coloring
 
 As show above, the image is the coloring of a game being played on Darwin Operating System. Below is a different battleship game being played on Ubuntu 16.04 LTS.
 
