@@ -8,7 +8,7 @@ Gameboard::Gameboard() {
   //empty constructor
 }
 
-void Gameboard::generateRandomBoard(bool host) {
+int Gameboard::generateRandomBoard(bool host) {
     setIsHost(host);
     initializeBoard();
     initializeGamePieces();
@@ -27,6 +27,8 @@ void Gameboard::generateRandomBoard(bool host) {
           generateBoardPlacement();
           displayGeneratedBoard();
           break;
+        case 'm':
+          return 0;
         default:
           move(20, 52);
           printw("Invalid Input please enter Y/N to accept board\n");
@@ -34,6 +36,7 @@ void Gameboard::generateRandomBoard(bool host) {
           break;
       }
     }
+    return 1;
 }
 
 void Gameboard::displayGeneratedBoard() {
@@ -55,8 +58,8 @@ void Gameboard::displayGeneratedBoard() {
       "   --------------------------------------------\n"
       "                                                ||\n"
       "                                                ||\n"
-      "                                                ||\n"
       " Y    - accept board                            ||\n"
+      " M    - generate board manually                 ||\n"
       " N    - generate new board                      ||\n");
   attron(A_UNDERLINE);
   move(21, 1);
@@ -81,7 +84,7 @@ void Gameboard::displayGeneratedBoard() {
   refresh();
 }
 
-void Gameboard::generateManualBoard() {
+int Gameboard::generateManualBoard() {
   initializeBoard();
   initializeGamePieces();
   displayEmptyBoard();
@@ -169,6 +172,8 @@ void Gameboard::generateManualBoard() {
           } //Still on Board
         } //Changing to Horizontal
         break;
+    case 'g':
+        return 0;
     case 10:
         if (isValidPlacement) {
           placeGamePiece(cursor_x, cursor_y, orientation, ship.Get_Piece_Length(), ship.Get_Piece_Symbol());
@@ -204,6 +209,7 @@ void Gameboard::generateManualBoard() {
     move(cursor_y, cursor_x);
     refresh();
   }
+  return 1;
 }
 
 bool Gameboard::acceptGameboard() {
@@ -320,7 +326,7 @@ void Gameboard::displayEmptyBoard() {
       "   --------------------------------------------\n"
       "                                                ||\n"
       "                                                ||\n"
-      "                                                ||\n"
+      " g  generate random board                       ||\n"
       " w, up arrow    - move the cursor up            ||\n"
       " a, left arrow  - move the cursor left          ||\n"
       " s, down arrow  - move the cursor down          ||\n"

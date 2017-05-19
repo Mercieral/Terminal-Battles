@@ -31,9 +31,9 @@ public:
 
     Gameboard();
 
-    void generateRandomBoard(bool host);
+    int generateRandomBoard(bool host);
 
-    void generateManualBoard();
+    int generateManualBoard();
 
     void dummyFunction();
 
