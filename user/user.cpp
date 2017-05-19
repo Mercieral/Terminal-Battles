@@ -298,6 +298,7 @@ void User::displayBoard(Gameboard board)
         " d, right arrow - move the cursor right         ||\n"
         " q              - quit the game                 ||\n"
         " enter          - send attack (Your turn only)  ||\n");
+        refresh();
     attron(A_UNDERLINE);
     move(21, 1);
     printw("instructions");
@@ -334,6 +335,7 @@ void User::displayBoard(Gameboard board)
     cursor.y = 9;
     cursor.x = 57;
     move(cursor.y, cursor.x);
+    refresh();
 }
 
 void User::printClientIP(struct sockaddr_in their_address)
