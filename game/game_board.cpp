@@ -8,14 +8,83 @@ Gameboard::Gameboard() {
   //empty constructor
 }
 
-void Gameboard::generateRandomBoard(bool host) {
+int Gameboard::generateRandomBoard(bool host) {
     setIsHost(host);
     initializeBoard();
     initializeGamePieces();
     generateBoardPlacement();
+    displayGeneratedBoard();
+
+    bool isDeciding = true;
+    while (isDeciding) {
+      switch(getch())
+      {
+        case 'y':
+          isDeciding = false;
+          break;
+        case 'n':
+          initializeBoard();
+          generateBoardPlacement();
+          displayGeneratedBoard();
+          break;
+        case 'm':
+          return 0;
+        default:
+          move(20, 52);
+          printw("Invalid Input please enter Y/N to accept board\n");
+          refresh();
+          break;
+      }
+    }
+    return 1;
 }
 
-void Gameboard::generateManualBoard() {
+void Gameboard::displayGeneratedBoard() {
+  move(6, 1);
+  printw(
+      "  --------------------Your Board--------------\n"
+      "   ____________________________________________\n"
+      "   |  | A | B | C | D | E | F | G | H | I | J |\n"
+      "   | 1|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 2|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 3|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 4|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 5|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 6|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 7|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 8|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 9|   |   |   |   |   |   |   |   |   |   |\n"
+      "   |10|   |   |   |   |   |   |   |   |   |   |\n"
+      "   --------------------------------------------\n"
+      "                                                ||\n"
+      "                                                ||\n"
+      " Y    - accept board                            ||\n"
+      " M    - generate board manually                 ||\n"
+      " N    - generate new board                      ||\n");
+  attron(A_UNDERLINE);
+  move(21, 1);
+  printw("instructions");
+  attroff(A_UNDERLINE);
+  move(13, 24);
+  refresh();
+  //int count = 0;
+  for (int i = 0; i < BOARD_SIZE; i++) {
+    for (int j = 0; j < BOARD_SIZE; j++) {
+      if (boardArray[i][j] != 'w')
+      {
+        move(i + 9, (j * 4) + 8);
+        addch(boardArray[i][j]);
+        // refresh();
+        // move(25 + count, 50);
+        // printw("In for loop");
+        // refresh();
+      }
+    }
+  }
+  refresh();
+}
+
+int Gameboard::generateManualBoard() {
   initializeBoard();
   initializeGamePieces();
   displayEmptyBoard();
@@ -103,6 +172,8 @@ void Gameboard::generateManualBoard() {
           } //Still on Board
         } //Changing to Horizontal
         break;
+    case 'g':
+        return 0;
     case 10:
         if (isValidPlacement) {
           placeGamePiece(cursor_x, cursor_y, orientation, ship.Get_Piece_Length(), ship.Get_Piece_Symbol());
@@ -122,35 +193,41 @@ void Gameboard::generateManualBoard() {
             {
               isPlacing = false;
               break;
-            }
-          }
+            } //Accept Gameboard
+          } //Final Ship Placed
           ship_to_place++;
           cursor_y = 13;
           cursor_x = 24;
           break;
-        }
+        } //No Collision
         else
         {
           move(20, 52);
           printw("Collision cannot place ship");
-        }
+        } //Collision
     } //End of switch case
     move(cursor_y, cursor_x);
     refresh();
   }
+  return 1;
 }
 
 bool Gameboard::acceptGameboard() {
   move(20, 52);
   printw("Do you want to use this board? Enter Y/N");
-  switch (getch())
-  {
-    case 'y':
-      return true;
-    case 'n':
-      return false;
+  while(true) {
+    switch (getch())
+    {
+      case 'y':
+        return true;
+      case 'n':
+        return false;
+      default:
+        move(20, 52);
+        printw("Invalid Input please enter Y/N to accept board\n");
+        refresh();
+    }
   }
-  return true;
 }
 
 void Gameboard::placeGamePiece(int cursor_x, int cursor_y, int orientation, int ship_length, char ship_symbol) {
@@ -249,7 +326,7 @@ void Gameboard::displayEmptyBoard() {
       "   --------------------------------------------\n"
       "                                                ||\n"
       "                                                ||\n"
-      "                                                ||\n"
+      " g  generate random board                       ||\n"
       " w, up arrow    - move the cursor up            ||\n"
       " a, left arrow  - move the cursor left          ||\n"
       " s, down arrow  - move the cursor down          ||\n"

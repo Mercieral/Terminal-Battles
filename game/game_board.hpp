@@ -31,9 +31,9 @@ public:
 
     Gameboard();
 
-    void generateRandomBoard(bool host);
+    int generateRandomBoard(bool host);
 
-    void generateManualBoard();
+    int generateManualBoard();
 
     void dummyFunction();
 
@@ -55,6 +55,8 @@ private:
     void removePreviousHighlight(int cursor_x, int cursor_y, int ship_length, int orientation);
 
     void displayEmptyBoard();
+
+    void displayGeneratedBoard();
 
     bool highlightShip(int cursor_x, int cursor_y, int ship_length, int orientation, char ship_symbol);
 

@@ -22,22 +22,47 @@ void User::gameLoop(int client_socket)
     int hitsOnEnemy = 0;
     int hitsOnSelf = 0;
 
-    move(22, 1);
-    printw("Would you like to create your board manually? Enter: y/n");
-    move(23,1);
-    refresh();
-
+    bool settingBoard = true;
     Gameboard myBoard = Gameboard();
+
+    move(23, 1);
+    printw("Would you like to create your board manually? Enter: y/n\n");
+    refresh();
+    int manualBoard = -1;
+    int randomBoard = -1;
     switch (getch())
     {
       case 'y':
-        myBoard.generateManualBoard();
-        displayBoard(myBoard);
+        manualBoard = myBoard.generateManualBoard();
         break;
       case 'n':
-        myBoard.generateRandomBoard(isHost);
-        displayBoard(myBoard);
+        randomBoard = myBoard.generateRandomBoard(isHost);
         break;
+      default:
+        move(23, 1);
+        printw("Invalid Input please enter Y/N for manual board\n");
+        refresh();
+        break;
+    }
+
+    while(settingBoard) {
+      if (manualBoard == 0)
+      {
+        for (int i = 8; i < 30; i++) {
+              mvprintw(i, 0, "\n");
+        }
+        manualBoard = -1;
+        randomBoard = myBoard.generateRandomBoard(isHost);
+      } //Manual changed to random
+      else if (randomBoard == 0)
+      {
+        randomBoard = -1;
+        manualBoard = myBoard.generateManualBoard();
+      } //Random changed to manual
+      else {
+        displayBoard(myBoard);
+        settingBoard = false;
+      }
     }
 
     coordinates grid_pos;
