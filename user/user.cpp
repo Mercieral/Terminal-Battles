@@ -45,7 +45,7 @@ void User::gameLoop(int client_socket)
                 break;
             default:
                 move(24, 1);
-                printw("Invalid Input please enter Y/N for manual board\n");
+                printw("Invalid Input please enter y/n for manual board\n");
                 refresh();
                 break;
         }

@@ -31,7 +31,7 @@ int Gameboard::generateRandomBoard(bool host) {
           return 0;
         default:
           move(20, 52);
-          printw("Invalid Input please enter Y/N to accept board\n");
+          printw("Invalid Input please enter y/n to accept board\n");
           refresh();
           break;
       }
@@ -214,7 +214,7 @@ int Gameboard::generateManualBoard() {
 
 bool Gameboard::acceptGameboard() {
   move(20, 52);
-  printw("Do you want to use this board? Enter Y/N");
+  printw("Do you want to use this board? Enter y/n");
   while(true) {
     switch (getch())
     {
@@ -224,7 +224,7 @@ bool Gameboard::acceptGameboard() {
         return false;
       default:
         move(20, 52);
-        printw("Invalid Input please enter Y/N to accept board\n");
+        printw("Invalid Input please enter y/n to accept board\n");
         refresh();
     }
   }

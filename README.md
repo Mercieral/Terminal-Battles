@@ -58,12 +58,12 @@ The commands to play the game are as follows:
 
 ![You sunk my battleship!](https://raw.githubusercontent.com/Mercieral/Terminal-Battles/master/images/battleship_sunk.png)
 
-TODO
+There are multiple ways to set up the game board after connecting to another player. One option is random board generation in which a board will be created randomly for you and you have the option to generate a new one if the current board is not what you want. The other option is to place your pieces manually on the board by following the onscreen instructions. You are also able to switch between the two options at any time by pressing the corresponding key in the onscreen instructions.
 
 
 ### Matchmaking Server
 
-There is a matchmaking server located [Here(link to Github Repo)](https://github.com/Mercieral/terminal-battles-server) which is hosted on AWS. When the game is run as a host, the user is connected to the server and pushes their name and IP. When the game is run as a client, the user is connected to the server and the server sends back all of the active hosts and their respective IP Addresses. This allows for users to connect to each other without having to know their exact global hostname or IP address. 
+There is a matchmaking server located [Here(link to Github Repo)](https://github.com/Mercieral/terminal-battles-server) which is hosted on AWS. When the game is run as a host, the user is connected to the server and pushes their name and IP. When the game is run as a client, the user is connected to the server and the server sends back all of the active hosts and their respective IP Addresses. This allows for users to connect to each other without having to know their exact global hostname or IP address.
 (NOTE: This fails for hosts with IP addresses given through NAT addressing)
 
 ## Game Design and Setup
@@ -103,7 +103,7 @@ Links of documentation and help:
 
 We use a client/server network architecture for the matchmaking server. Both the host and clients will establish TCP connections to the server and push/pull data accordingly. The server is using node.js "net" module to handle tcp streams.
 
-The game logic is done strictly with a peer-to-peer network architecture using C TCP sockets. Each attack is sent as a struct with an x,y int value, and each response is receieved as a single char value. 
+The game logic is done strictly with a peer-to-peer network architecture using C TCP sockets. Each attack is sent as a struct with an x,y int value, and each response is receieved as a single char value.
 
 ## Known Bugs/Issues
 
