@@ -37,7 +37,7 @@ During development, we found that Darwin Operating System did not need the tag `
 
 ## Usage
 
-TODO
+The game can be used as a nice relaxing way to play between to friends over IP or finding someone else to play with at random. 
 
 ### Running the Game
 
@@ -54,15 +54,20 @@ The commands to play the game are as follows:
 | s, down arrow   | Move the cursor down         |
 | d, right arrow  | Move the cursor right        |
 | q               | Quit the game                |
-| enter           | Send attack (your turn only) |
+| enter, space    | Send attack (your turn only) |
 
 ![You sunk my battleship!](https://raw.githubusercontent.com/Mercieral/Terminal-Battles/master/images/battleship_sunk.png)
 
 There are multiple ways to set up the game board after connecting to another player. One option is random board generation in which a board will be created randomly for you and you have the option to generate a new one if the current board is not what you want. The other option is to place your pieces manually on the board by following the onscreen instructions. You are also able to switch between the two options at any time by pressing the corresponding key in the onscreen instructions.
 
+![Manual generation](https://github.com/Mercieral/Terminal-Battles/blob/master/images/manual_generation_2.png)
+
+
+![fuller board](https://raw.githubusercontent.com/Mercieral/Terminal-Battles/master/images/fuller_board.png)
+While playing the game, you will get a message notifying it your turn and showing when not to play [above picture does not show message to say your turn]. As you play, you will get messages if you destroy a complete ship. Once a player wins, the board will show the placement of all the enemy's pieces, which were hit and keep the misses shown. 
+
 
 ### Matchmaking Server
-
 There is a matchmaking server located [Here(link to Github Repo)](https://github.com/Mercieral/terminal-battles-server) which is hosted on AWS. When the game is run as a host, the user is connected to the server and pushes their name and IP. When the game is run as a client, the user is connected to the server and the server sends back all of the active hosts and their respective IP Addresses. This allows for users to connect to each other without having to know their exact global hostname or IP address.
 (NOTE: This fails for hosts with IP addresses given through NAT addressing)
 
@@ -85,8 +90,6 @@ game
 |- game_piece.cpp
 |- game_piece.hpp
 ```
-
-TODO
 
 ## Help
 
