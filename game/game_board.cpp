@@ -13,6 +13,72 @@ void Gameboard::generateRandomBoard(bool host) {
     initializeBoard();
     initializeGamePieces();
     generateBoardPlacement();
+    displayGeneratedBoard();
+
+    bool isDeciding = true;
+    while (isDeciding) {
+      switch(getch())
+      {
+        case 'y':
+          isDeciding = false;
+          break;
+        case 'n':
+          initializeBoard();
+          generateBoardPlacement();
+          displayGeneratedBoard();
+          break;
+        default:
+          move(20, 52);
+          printw("Invalid Input please enter Y/N to accept board\n");
+          refresh();
+          break;
+      }
+    }
+}
+
+void Gameboard::displayGeneratedBoard() {
+  move(6, 1);
+  printw(
+      "  --------------------Your Board--------------\n"
+      "   ____________________________________________\n"
+      "   |  | A | B | C | D | E | F | G | H | I | J |\n"
+      "   | 1|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 2|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 3|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 4|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 5|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 6|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 7|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 8|   |   |   |   |   |   |   |   |   |   |\n"
+      "   | 9|   |   |   |   |   |   |   |   |   |   |\n"
+      "   |10|   |   |   |   |   |   |   |   |   |   |\n"
+      "   --------------------------------------------\n"
+      "                                                ||\n"
+      "                                                ||\n"
+      "                                                ||\n"
+      " Y    - accept board                            ||\n"
+      " N    - generate new board                      ||\n");
+  attron(A_UNDERLINE);
+  move(21, 1);
+  printw("instructions");
+  attroff(A_UNDERLINE);
+  move(13, 24);
+  refresh();
+  //int count = 0;
+  for (int i = 0; i < BOARD_SIZE; i++) {
+    for (int j = 0; j < BOARD_SIZE; j++) {
+      if (boardArray[i][j] != 'w')
+      {
+        move(i + 9, (j * 4) + 8);
+        addch(boardArray[i][j]);
+        // refresh();
+        // move(25 + count, 50);
+        // printw("In for loop");
+        // refresh();
+      }
+    }
+  }
+  refresh();
 }
 
 void Gameboard::generateManualBoard() {
@@ -122,18 +188,18 @@ void Gameboard::generateManualBoard() {
             {
               isPlacing = false;
               break;
-            }
-          }
+            } //Accept Gameboard
+          } //Final Ship Placed
           ship_to_place++;
           cursor_y = 13;
           cursor_x = 24;
           break;
-        }
+        } //No Collision
         else
         {
           move(20, 52);
           printw("Collision cannot place ship");
-        }
+        } //Collision
     } //End of switch case
     move(cursor_y, cursor_x);
     refresh();
