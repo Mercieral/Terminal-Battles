@@ -101,7 +101,9 @@ Links of documentation and help:
 
 ### Networking
 
-TODO
+We use a client/server network architecture for the matchmaking server. Both the host and clients will establish TCP connections to the server and push/pull data accordingly. The server is using node.js "net" module to handle tcp streams.
+
+The game logic is done strictly with a peer-to-peer network architecture using C TCP sockets. Each attack is sent as a struct with an x,y int value, and each response is receieved as a single char value. 
 
 ## Known Bugs/Issues
 
