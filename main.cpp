@@ -5,7 +5,7 @@ using namespace std;
 
 void setupWindow();
 
-int connectToServer(char* type);
+int connectToServer(char *type);
 
 void getHosts(int socket);
 
@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
             getnstr(str, 100);
             noecho();
             if (strcmp(str, "") != 0) {
-                char strToSend[6+strlen(str)];
+                char strToSend[6 + strlen(str)];
                 strcpy(strToSend, "host,");
                 strcat(strToSend, str);
                 matchmaking_socket = connectToServer(strToSend);
@@ -55,12 +55,11 @@ int main(int argc, char **argv) {
             for (int i = 7; i < 30; i++) {
                 mvprintw(i, 0, "\n");
             }
-            move(7,0);
+            move(7, 0);
             matchmaking_socket = connectToServer((char *) "client");
             if (matchmaking_socket != -1) {
                 getHosts(matchmaking_socket);
-            }
-            else {
+            } else {
                 refresh();
                 mvprintw(11, 0, "Enter the hostname or IP of the host: ");
                 char *str = (char *) malloc(100);
@@ -86,7 +85,7 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-int connectToServer(char * type) {
+int connectToServer(char *type) {
     struct sockaddr_in server_address;
     unsigned short serverPort = 5000;
     int client_socket = socket(PF_INET, SOCK_STREAM, 0);
@@ -98,8 +97,7 @@ int connectToServer(char * type) {
         printw("\nThe matchmaking server appears to be down =(\nUsers will only be able to connect by specifying the IP address manually...\n\n");
         refresh();
         return -1;
-    }
-    else {
+    } else {
         send(client_socket, type, strlen(type), 0);
         return client_socket;
     }
@@ -113,12 +111,12 @@ void getHosts(int socket) {
         mvprintw(i, 0, "\n");
     }
     refresh();
-    char** hostNames = (char**) malloc((30+2) * sizeof(char*));
-    char** hostIPs = (char**) malloc(30 * sizeof(char*));
-    char * hostInfo, *hostName, *hostIP, * brkHost, * brkInfo ;
+    char **hostNames = (char **) malloc((30 + 2) * sizeof(char *));
+    char **hostIPs = (char **) malloc(30 * sizeof(char *));
+    char *hostInfo, *hostName, *hostIP, *brkHost, *brkInfo;
     hostInfo = strtok_r(recv_buffer, ",", &brkHost);
     int counter = 0;
-    while(hostInfo != NULL) {
+    while (hostInfo != NULL) {
         hostName = strtok_r(hostInfo, ";", &brkInfo);
         hostIP = strtok_r(NULL, ";", &brkInfo);
         hostNames[counter] = hostName;
@@ -126,8 +124,8 @@ void getHosts(int socket) {
         hostInfo = strtok_r(NULL, ",", &brkHost);
         counter++;
     }
-    hostNames[counter+1] = (char*)"Enter IP/Hostname manually";
-    hostNames[counter+2] = (char*)"Exit";
+    hostNames[counter + 1] = (char *) "Enter IP/Hostname manually";
+    hostNames[counter + 2] = (char *) "Exit";
 
     int i = 0;
     move(10, 4);
@@ -138,10 +136,9 @@ void getHosts(int socket) {
             attron(A_STANDOUT); // highlights the first item.
         else
             attroff(A_STANDOUT);
-        if (i == counter){
+        if (i == counter) {
             printw("---------------");
-        }
-        else {
+        } else {
             printw(hostNames[i]);
         }
 
@@ -164,18 +161,18 @@ void getHosts(int socket) {
         switch (getch()) {
             case KEY_UP:
                 i--;
-                i = (i < 0) ?  counter+2 : i;
+                i = (i < 0) ? counter + 2 : i;
                 if (i == counter) i--;
                 if (counter == 0) i = (prev == 1) ? 2 : 1;
                 break;
             case KEY_DOWN:
                 i++;
-                i = (i > counter+2) ? 0 : i;
+                i = (i > counter + 2) ? 0 : i;
                 if (i == counter) i++;
                 if (counter == 0) i = (prev == 1) ? 2 : 1;
                 break;
             case 10:
-                if (i == counter+1){
+                if (i == counter + 1) {
                     curs_set(2);
                     mvprintw(6, 2, "Enter the hostname or IP of the host: ");
                     char *str = (char *) malloc(100);
@@ -197,12 +194,10 @@ void getHosts(int socket) {
                     }
                     curs_set(1);
                     refresh();
-                }
-                else if (i == counter+2) {
+                } else if (i == counter + 2) {
                     curs_set(2);
                     return;
-                }
-                else {
+                } else {
                     for (int i = 6; i < 30; i++) {
                         mvprintw(i, 0, "\n");
                     }
