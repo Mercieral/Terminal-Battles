@@ -60,8 +60,6 @@ void Host::connect()
 
 		if (acceptClientConnection())
 		{
-			printw("  Connection was accepted, continuing\n");
-			refresh();
 			const char *msg = "Connection accepted by host\n";
 			send(client_socket, msg, strlen(msg), 0);
 			this->gameLoop(client_socket);

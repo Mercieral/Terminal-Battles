@@ -35,19 +35,20 @@ void User::gameLoop(int client_socket)
     refresh();
     int manualBoard = -1;
     int randomBoard = -1;
-    switch (getch())
-    {
-      case 'y':
-        manualBoard = myBoard.generateManualBoard();
-        break;
-      case 'n':
-        randomBoard = myBoard.generateRandomBoard(isHost);
-        break;
-      default:
-        move(23, 1);
-        printw("Invalid Input please enter Y/N for manual board\n");
-        refresh();
-        break;
+    while ((manualBoard == -1) && (randomBoard == -1)) {
+        switch (getch()) {
+            case 'y':
+                manualBoard = myBoard.generateManualBoard();
+                break;
+            case 'n':
+                randomBoard = myBoard.generateRandomBoard(isHost);
+                break;
+            default:
+                move(24, 1);
+                printw("Invalid Input please enter Y/N for manual board\n");
+                refresh();
+                break;
+        }
     }
 
     while(settingBoard) {
@@ -70,6 +71,23 @@ void User::gameLoop(int client_socket)
       }
     }
 
+    //wait until user is ready to play
+    char str[6];
+    send(client_socket, "ready", 6, 0);
+    move(20, 52);
+    attron(COLOR_PAIR(5));
+    printw("       Waiting for enemy to place ships        ");
+    attron(COLOR_PAIR(1));
+    refresh();
+    if (recv(client_socket, &str, 6, MSG_WAITALL) <= 0) {
+        mvprintw(7,0,"Host has quit the game!");
+        return;
+    };
+    move(20, 52);
+    printw("\n");
+    refresh();
+    move(cursor.y, cursor.x);
+
     coordinates grid_pos;
     grid_pos.x = 0;
     grid_pos.y = 0;
@@ -85,6 +103,12 @@ void User::gameLoop(int client_socket)
 
         if (isMyTurn)
         {
+            move(20, 52);
+            attron(COLOR_PAIR(6));
+            printw("                Clear to attack!               ");
+            attron(COLOR_PAIR(1));
+            move(cursor.y, cursor.x);
+            refresh();
             char c;
             switch (getch())
             {
@@ -243,7 +267,7 @@ void User::gameLoop(int client_socket)
         {
             move(20, 52);
             attron(COLOR_PAIR(5));
-            printw("              Waiting for enemy                 ");
+            printw("           Waiting for enemy attack            ");
             attron(COLOR_PAIR(1));
             move(22, 52);
             refresh();
