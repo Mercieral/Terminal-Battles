@@ -15,6 +15,11 @@ void User::gameLoop(int client_socket)
     while(!logQueue.empty()) {
         logQueue.pop();
     }
+    aircraft_count = 5;
+    battleship_count = 4;
+    submarine_count = 3;
+    destroyer_count = 3;
+    patrol_count = 2;
     char *received_msg = (char *)malloc(1024);
     //const char *msg = "Your Turn\n";
     bool gameIsRunning = true;
