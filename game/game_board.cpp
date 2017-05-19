@@ -17,6 +17,7 @@ int Gameboard::generateRandomBoard(bool host) {
 
     bool isDeciding = true;
     while (isDeciding) {
+        flushinp();
       switch(getch())
       {
         case 'y':
@@ -42,7 +43,7 @@ int Gameboard::generateRandomBoard(bool host) {
 void Gameboard::displayGeneratedBoard() {
   move(6, 1);
   printw(
-      "  --------------------Your Board--------------\n"
+      "  -----------------Your Board------------------\n"
       "   ____________________________________________\n"
       "   |  | A | B | C | D | E | F | G | H | I | J |\n"
       "   | 1|   |   |   |   |   |   |   |   |   |   |\n"
@@ -56,11 +57,11 @@ void Gameboard::displayGeneratedBoard() {
       "   | 9|   |   |   |   |   |   |   |   |   |   |\n"
       "   |10|   |   |   |   |   |   |   |   |   |   |\n"
       "   --------------------------------------------\n"
-      "                                                ||\n"
-      "                                                ||\n"
-      " Y    - accept board                            ||\n"
-      " M    - generate board manually                 ||\n"
-      " N    - generate new board                      ||\n");
+      "                                               \n"
+      "                                               \n"
+      "  y  -  accept board placement                 \n"
+      "  n  -  randomize board                        \n"
+      "  m  -  switch to manual mode                  \n");
   attron(A_UNDERLINE);
   move(21, 1);
   printw("instructions");
@@ -98,6 +99,7 @@ int Gameboard::generateManualBoard() {
   {
     Game_Piece ship = piece_array[ship_to_place];
     bool isValidPlacement = highlightShip(cursor_x, cursor_y, ship.Get_Piece_Length(), orientation, ship.Get_Piece_Symbol());
+      flushinp();
     switch (getch())
     {
     case KEY_LEFT:
@@ -174,6 +176,7 @@ int Gameboard::generateManualBoard() {
         break;
     case 'g':
         return 0;
+    case ' ':
     case 10:
         if (isValidPlacement) {
           placeGamePiece(cursor_x, cursor_y, orientation, ship.Get_Piece_Length(), ship.Get_Piece_Symbol());
@@ -216,6 +219,7 @@ bool Gameboard::acceptGameboard() {
   move(20, 52);
   printw("Do you want to use this board? Enter y/n");
   while(true) {
+      flushinp();
     switch (getch())
     {
       case 'y':
@@ -310,7 +314,7 @@ void Gameboard::removePreviousHighlight(int cursor_x, int cursor_y, int ship_len
 void Gameboard::displayEmptyBoard() {
   move(6, 1);
   printw(
-      "  --------------------Your Board--------------\n"
+      "  ------------------Your Board-----------------\n"
       "   ____________________________________________\n"
       "   |  | A | B | C | D | E | F | G | H | I | J |\n"
       "   | 1|   |   |   |   |   |   |   |   |   |   |\n"
@@ -324,15 +328,15 @@ void Gameboard::displayEmptyBoard() {
       "   | 9|   |   |   |   |   |   |   |   |   |   |\n"
       "   |10|   |   |   |   |   |   |   |   |   |   |\n"
       "   --------------------------------------------\n"
-      "                                                ||\n"
-      "                                                ||\n"
-      " g  generate random board                       ||\n"
-      " w, up arrow    - move the cursor up            ||\n"
-      " a, left arrow  - move the cursor left          ||\n"
-      " s, down arrow  - move the cursor down          ||\n"
-      " d, right arrow - move the cursor right         ||\n"
-      " r              - rotate piece                  ||\n"
-      " enter          - place piece                   ||\n");
+      "                                               \n"
+      "                                               \n"
+      " w, up arrow    - move the cursor up           \n"
+      " a, left arrow  - move the cursor left         \n"
+      " s, down arrow  - move the cursor down         \n"
+      " d, right arrow - move the cursor right        \n"
+      " r              - rotate piece                 \n"
+      " enter, space   - place piece                  \n"
+      " g              - switch to random mode        \n");
   attron(A_UNDERLINE);
   move(21, 1);
   printw("instructions");

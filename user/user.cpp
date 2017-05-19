@@ -36,6 +36,7 @@ void User::gameLoop(int client_socket)
     int manualBoard = -1;
     int randomBoard = -1;
     while ((manualBoard == -1) && (randomBoard == -1)) {
+        flushinp();
         switch (getch()) {
             case 'y':
                 manualBoard = myBoard.generateManualBoard();
@@ -98,17 +99,25 @@ void User::gameLoop(int client_socket)
         isMyTurn = false;
     } //Is a client
 
+    bool alreadyAttacked = false;
+
     while (gameIsRunning)
     {
 
         if (isMyTurn)
         {
-            move(20, 52);
-            attron(COLOR_PAIR(6));
-            printw("                Clear to attack!               ");
-            attron(COLOR_PAIR(1));
-            move(cursor.y, cursor.x);
-            refresh();
+            if (!alreadyAttacked) {
+                move(20, 52);
+                attron(COLOR_PAIR(6));
+                printw("                Clear to attack!               ");
+                attron(COLOR_PAIR(1));
+                move(cursor.y, cursor.x);
+                refresh();
+            }
+            else {
+                alreadyAttacked = false;
+            }
+            flushinp();
             char c;
             switch (getch())
             {
@@ -150,6 +159,7 @@ void User::gameLoop(int client_socket)
                 free(received_msg);
                 gameIsRunning = false;
                 return;
+            case ' ':
             case 10:
                 //do something
                 c = inch() & A_CHARTEXT;
@@ -157,10 +167,11 @@ void User::gameLoop(int client_socket)
                 {
                     move(20, 52);
                     attron(COLOR_PAIR(5));
-                    printw("    You already attacked there! Try again       ");
+                    printw("     You already attacked there! Try again     ");
                     attroff(COLOR_PAIR(1));
                     move(22, 52);
                     refresh();
+                    alreadyAttacked = true;
                     break;
                 }
                 else
@@ -251,6 +262,7 @@ void User::gameLoop(int client_socket)
                         attron(COLOR_PAIR(1));
                         move(22, 52);
                         refresh();
+                        flushinp();
                         getch();
                         return;
                     }
@@ -314,6 +326,7 @@ void User::gameLoop(int client_socket)
                     attroff(COLOR_PAIR(1));
                     move(22, 52);
                     refresh();
+                    flushinp();
                     getch();
                     return;
                 }
@@ -343,15 +356,15 @@ void User::displayBoard(Gameboard board)
         "   | 9|   |   |   |   |   |   |   |   |   |   |~~~~~| 9|   |   |   |   |   |   |   |   |   |   |\n"
         "   |10|   |   |   |   |   |   |   |   |   |   |~~~~~|10|   |   |   |   |   |   |   |   |   |   |\n"
         "   --------------------------------------------~~~~~--------------------------------------------\n"
-        "                                                ||\n"
-        "                                                ||\n"
-        "                                                ||\n"
-        " w, up arrow    - move the cursor up            ||\n"
-        " a, left arrow  - move the cursor left          ||\n"
-        " s, down arrow  - move the cursor down          ||\n"
-        " d, right arrow - move the cursor right         ||\n"
-        " q              - quit the game                 ||\n"
-        " enter          - send attack (Your turn only)  ||\n");
+        "                                                |||\n"
+        "                                                |||\n"
+        "                                                |||\n"
+        " w, up arrow    - move the cursor up            |||\n"
+        " a, left arrow  - move the cursor left          |||\n"
+        " s, down arrow  - move the cursor down          |||\n"
+        " d, right arrow - move the cursor right         |||\n"
+        " enter, space   - send attack                   |||\n"
+        " q              - quit the game                 |||\n");
         refresh();
     attron(A_UNDERLINE);
     move(21, 1);

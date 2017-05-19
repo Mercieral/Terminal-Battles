@@ -85,6 +85,7 @@ bool Host::acceptClientConnection()
 
 	while (1)
 	{
+		flushinp();
 		char user_input;
 		user_input = getch();
 		if (user_input == 'Y' || user_input == 'y')

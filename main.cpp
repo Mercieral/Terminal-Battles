@@ -38,6 +38,7 @@ int main(int argc, char **argv) {
             mvprintw(8, 2, "Enter a host (display) name: ");
             char *str = (char *) malloc(100);
             echo();
+            flushinp();
             getnstr(str, 100);
             noecho();
             if (strcmp(str, "") != 0) {
@@ -64,6 +65,7 @@ int main(int argc, char **argv) {
                 mvprintw(11, 0, "Enter the hostname or IP of the host: ");
                 char *str = (char *) malloc(100);
                 echo();
+                flushinp();
                 getnstr(str, 100);
                 noecho();
                 if (strcmp(str, "") != 0) {
@@ -157,6 +159,7 @@ void getHosts(int socket) {
     int prev = 0;
     while (isActiveMenu) {
         prev = i;
+        flushinp();
         // use a variable to increment or decrement the value based on the input.
         switch (getch()) {
             case KEY_UP:
@@ -178,6 +181,7 @@ void getHosts(int socket) {
                     char *str = (char *) malloc(100);
                     echo();
                     refresh();
+                    flushinp();
                     getnstr(str, 100);
                     noecho();
                     if (strcmp(str, "") != 0) {
@@ -276,6 +280,7 @@ char startMenu() {
     char ret = 'e';
     while (isActiveMenu) {
         prev = i;
+        flushinp();
         // use a variable to increment or decrement the value based on the input.
         switch (getch()) {
             case KEY_UP:
