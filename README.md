@@ -1,5 +1,5 @@
 # Terminal-Battles
-A terminal-based multi-player version of the game of battleship. This is done for the final project for the CSSE432 Networks course.
+A terminal-based multiplayer version of the game of battleship. This is done for the final project for the CSSE432 Networks course.
 
 [![GitHub issues](https://img.shields.io/github/issues/mercieral/Terminal-Battles.svg?style=plastic)](https://github.com/Mercieral/Terminal-Battles/issues)
 
@@ -7,7 +7,7 @@ A terminal-based multi-player version of the game of battleship. This is done fo
 
 ## Installation
 
-The installation guides work for Unix based operating systems. The two operating systems that development was mainly done Darwin (Macintosh) and Ubuntu 16.04 LTS. The extra libraries needed for the operating systems are explained for the two operating systems which development was done on.
+The installation guides work for most Unix-based operating systems. The two operating systems that were mainly developed and tested on include Darwin (Macintosh) and Ubuntu 16.04 LTS. Detailed instructions on how to install the extra libraries needed for the specific operating systems are explained below.
 
 ### Ubuntu
 
@@ -63,11 +63,12 @@ TODO
 
 ### Matchmaking Server
 
-TODO
+There is a matchmaking server located [Here(link to Github Repo)](https://github.com/Mercieral/terminal-battles-server) which is hosted on AWS. When the game is run as a host, the user is connected to the server and pushes their name and IP. When the game is run as a client, the user is connected to the server and the server sends back all of the active hosts and their respective IP Addresses. This allows for users to connect to each other without having to know their exact global hostname or IP address. 
+(NOTE: This fails for hosts with IP addresses given through NAT addressing)
 
 ## Game Design and Setup
 
-Using design principles learned in previous classes, the layout of the project is designed to be TODO. The layout of the project is made so the game can be easily extended to add additional features or use the code to create another network terminal game.
+Using design principles learned in previous classes, the layout of the project is designed to make full use of polymorphism and abstraction. The layout of the project is made so the game can be easily extended to add additional features or use the code to create another network terminal game. It also drastically decreases code duplication, and increases code readability
 
 ```
 main.cpp
