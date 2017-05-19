@@ -5,6 +5,10 @@ A terminal-based multiplayer version of the game of battleship. This is done for
 
 ![Battleship splash screen](https://raw.githubusercontent.com/Mercieral/Terminal-Battles/master/images/splash_screen.png)
 
+## Note
+
+Battleship board design was from this [repo](https://github.com/corsaroquad/battleship-Curses-edu).
+
 ## Installation
 
 The installation guides work for most Unix-based operating systems. The two operating systems that were mainly developed and tested on include Darwin (Macintosh) and Ubuntu 16.04 LTS. Detailed instructions on how to install the extra libraries needed for the specific operating systems are explained below.
